@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -41,21 +42,23 @@ namespace SimplzQuestionnaire
             services.AddAntiforgery(x => x.HeaderName = Configuration["Antiforgery"]);
             services.AddRazorPages(options =>
             {
-                //options.Conventions.AuthorizeFolder("/");
-                //options.Conventions.AllowAnonymousToPage("/Authorization/Login");
+                options.Conventions.AuthorizeFolder("/");
+                options.Conventions.AllowAnonymousToPage("/Authorization/Login");
             });
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(options =>
-            //    {
-            //        //options.AccessDeniedPath = "/Account/AccessDenied";
-            //        //options.Cookie.Name = "Cookie";
-            //        //options.Cookie.HttpOnly = true;
-            //        //options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
-            //        options.LoginPath = "/Authorization/Login";
-            //        //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-            //        //options.SlidingExpiration = true;
-            //    });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
+                //.AddCookie(options =>
+                //{
+                //    //options.AccessDeniedPath = "/Account/AccessDenied";
+                //    //options.Cookie.Name = "Cookie";
+                //    //options.Cookie.HttpOnly = true;
+                //    //options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
+                //    options.LoginPath = "/Authorization/Login";
+                //    //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                //    //options.SlidingExpiration = true;
+                //});
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
