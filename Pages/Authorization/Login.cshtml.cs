@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using System.Linq;
 using SimplzQuestionnaire.Model;
 using Microsoft.AspNetCore.Identity;
 
@@ -33,12 +30,10 @@ namespace SimplzQuestionnaire.Pages.Authorization
             public string Password { get; set; }
         }
 
-        private readonly SQContext _context;
         private readonly SignInManager<QuestionnaireUser> _signInManager;
 
-        public LoginModel(SignInManager<QuestionnaireUser> signInManager, SQContext context)
+        public LoginModel(SignInManager<QuestionnaireUser> signInManager)
         {
-            _context = context;
             _signInManager = signInManager;
         }
 
