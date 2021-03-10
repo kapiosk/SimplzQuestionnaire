@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using SimplzQuestionnaire.Model;
 
 namespace SimplzQuestionnaire.Pages.Authorization
 {
@@ -17,60 +19,88 @@ namespace SimplzQuestionnaire.Pages.Authorization
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public string ReturnUrl { get; private set; }
-
         [TempData]
         public string ErrorMessage { get; set; }
 
         public class InputModel
         {
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            [DataType(DataType.Text)]
+            public string Username { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
         }
-        public void OnGet()
+
+        private readonly SQContext _context;
+
+        public LoginModel(SQContext context)
         {
+            _context = context;
         }
 
+        public void OnGet() { }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null, string token = null)
+        private async Task<bool> LogIn(string username, string password)
         {
-            ReturnUrl = returnUrl;
+            var hashedPassword = QuestionnaireUser.ComputeSha256Hash(password);
+            var user = _context.QuestionnaireUsers.FirstOrDefault(x => x.Username.Equals(username) && x.Password.Equals(hashedPassword));
+            if (user is not null)
+            {
+                var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.NameIdentifier, $"{user.QuestionnaireUserId}" )
+                    };
 
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<IActionResult> OnPostLoginAsync(string returnUrl = null)
+        {
             if (ModelState.IsValid)
             {
-                bool isValid = (Input.Email == "info@3ai.solutions" && Input.Password == "123");
-
-                if (!isValid)
+                if (await LogIn(Input.Username, Input.Password))
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
+                    if (!string.IsNullOrEmpty(returnUrl))
+                        return LocalRedirect(returnUrl);
+
+                    return LocalRedirect("/");
                 }
 
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, "3a1"),
-                    new Claim(ClaimTypes.NameIdentifier, "123")
-                };
-
-                var claimsIdentity = new ClaimsIdentity(
-                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
-
-                if (!string.IsNullOrEmpty(ReturnUrl))
-                    return LocalRedirect(ReturnUrl);
-
-                return LocalRedirect("/");
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
+            return Page();
+        }
 
-            // Something failed. Redisplay the form.
+        public async Task<IActionResult> OnPostCreateAsync(string returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var hashedPassword = QuestionnaireUser.ComputeSha256Hash(Input.Password);
+                    await _context.QuestionnaireUsers.AddAsync(new QuestionnaireUser { Username = Input.Username, Password = hashedPassword });
+                    _context.SaveChanges();
+
+                    await LogIn(Input.Username, Input.Password);
+
+                    if (!string.IsNullOrEmpty(returnUrl))
+                        return LocalRedirect(returnUrl);
+
+                    return LocalRedirect("/");
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
             return Page();
         }
     }
