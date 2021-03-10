@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using SimplzQuestionnaire.Interfaces;
 
 namespace SimplzQuestionnaire.Pages
 {
     public class IndexModel : PageModel
     {
-
-        public IndexModel(ILogger<IndexModel> logger)
-        { }
+        private ICurrentUserService _currentUser;
+        public IndexModel(ICurrentUserService currentUser)
+        {
+            _currentUser = currentUser;
+        }
 
         public void OnGet()
         { }

@@ -49,18 +49,8 @@ namespace SimplzQuestionnaire
                 });
 
             services.AddScoped<SignInManager<Model.QuestionnaireUser>>();
-            services.AddIdentityCore<Model.QuestionnaireUser>(
-                opts =>
-                {
-                    opts.Password.RequireDigit = false;
-                    opts.Password.RequireLowercase = false;
-                    opts.Password.RequireUppercase = false;
-                    opts.Password.RequireNonAlphanumeric = false;
-                    opts.Password.RequiredLength = 1;
 
-                    opts.User.RequireUniqueEmail = false;
-                    opts.SignIn.RequireConfirmedEmail = false;
-                })
+            services.AddIdentityCore<Model.QuestionnaireUser>(opts => Configuration.Bind("IdentityCoreSettings", opts))
                 .AddEntityFrameworkStores<Model.SQContext>();
 
             services.AddAuthentication(IdentityConstants.ApplicationScheme)
