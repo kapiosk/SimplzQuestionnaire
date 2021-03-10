@@ -5,7 +5,7 @@ namespace SimplzQuestionnaire.Pages
 {
     public class IndexModel : PageModel
     {
-        private ICurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
         public string UserName
         {
             get

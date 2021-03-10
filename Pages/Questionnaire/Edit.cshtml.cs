@@ -14,8 +14,8 @@ namespace SimplzQuestionnaire.Pages.Questionnaire
         [BindProperty(SupportsGet = true)]
         public int QuestionnaireId { get; set; }
 
-        private ICurrentUserService _currentUser;
-        private SQContext _context;
+        private readonly ICurrentUserService _currentUser;
+        private readonly SQContext _context;
         
         public string UserName
         {
