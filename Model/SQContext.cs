@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SimplzQuestionnaire.Model
 {
@@ -63,44 +62,32 @@ namespace SimplzQuestionnaire.Model
         public string Name { get; set; }
         public Guid Code { get; set; }
         public Progression Progression { get; set; }
-        public int QuestionnaireUserId { get; set; }
+
+        [ForeignKey("QuestionnaireUser")]
+        public string QuestionnaireUserId { get; set; }
         public QuestionnaireUser QuestionnaireUser { get; set; }
         public ICollection<Question> Question { get; set; }
     }
 
-    public class QuestionnaireUser
+    public class QuestionnaireUser : IdentityUser
     {
-        public int QuestionnaireUserId { get; set; }
-        public string Name { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        [ForeignKey("QuestionnaireUserId")]
         public ICollection<Questionnaire> Questionnaire { get; set; }
+        public ICollection<IdentityUserClaim<string>> Claims { get; set; }
+    }
 
-        [NotMapped]
-        public string HashedPassword { get { return ComputeSha256Hash(Password); } }
-
-        public static string ComputeSha256Hash(string rawData)
-        {
-            // Create a SHA256   
-            using SHA256 sha256Hash = SHA256.Create();
-            // ComputeHash - returns byte array  
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-            // Convert byte array to a string   
-            StringBuilder builder = new();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("x2"));
-            }
-            return builder.ToString();
-        }
+    public class QuestionnaireUserClaim : IdentityUserClaim<string>
+    {
+        public QuestionnaireUser QuestionnaireUser { get; set; }
     }
 
     public class UserAnswer
     {
         public int AnswerId { get; set; }
         public Answer Answer { get; set; }
-        public int QuestionnaireUserId { get; set; }
+
+        [ForeignKey("QuestionnaireUser")]
+        public string QuestionnaireUserId { get; set; }
         public QuestionnaireUser QuestionnaireUser { get; set; }
         public int TimeTaken { get; set; }
     }

@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Services;
@@ -26,9 +28,8 @@ namespace SimplzQuestionnaire
             services.AddHttpContextAccessor();
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
-            services.AddDbContext<Model.SQContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<Model.SQContext>(
+                opts => opts.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllers().AddJsonOptions(
                 opt =>
@@ -40,25 +41,31 @@ namespace SimplzQuestionnaire
             );
 
             services.AddAntiforgery(x => x.HeaderName = Configuration["Antiforgery"]);
-            services.AddRazorPages(options =>
-            {
-                options.Conventions.AuthorizeFolder("/");
-                options.Conventions.AllowAnonymousToPage("/Authorization/Login");
-            });
+            services.AddRazorPages(
+                opts =>
+                {
+                    opts.Conventions.AuthorizeFolder("/");
+                    opts.Conventions.AllowAnonymousToPage("/Authorization/Login");
+                });
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options))
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
-                //.AddCookie(options =>
-                //{
-                //    //options.AccessDeniedPath = "/Account/AccessDenied";
-                //    //options.Cookie.Name = "Cookie";
-                //    //options.Cookie.HttpOnly = true;
-                //    //options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
-                //    options.LoginPath = "/Authorization/Login";
-                //    //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                //    //options.SlidingExpiration = true;
-                //});
+            services.AddScoped<SignInManager<Model.QuestionnaireUser>>();
+            services.AddIdentityCore<Model.QuestionnaireUser>(
+                opts =>
+                {
+                    opts.Password.RequireDigit = false;
+                    opts.Password.RequireLowercase = false;
+                    opts.Password.RequireUppercase = false;
+                    opts.Password.RequireNonAlphanumeric = false;
+                    opts.Password.RequiredLength = 1;
+
+                    opts.User.RequireUniqueEmail = false;
+                    opts.SignIn.RequireConfirmedEmail = false;
+                })
+                .AddEntityFrameworkStores<Model.SQContext>();
+
+            services.AddAuthentication(IdentityConstants.ApplicationScheme)
+                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => Configuration.Bind("JwtSettings", opts))
+                    .AddCookie(IdentityConstants.ApplicationScheme, opts => Configuration.Bind("CookieSettings", opts));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="AppData\" />
+    <Folder Include="Pages\Questionnaires\" />
   </ItemGroup>
 
 </Project>

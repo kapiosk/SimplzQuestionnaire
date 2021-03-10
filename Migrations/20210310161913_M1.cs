@@ -11,15 +11,47 @@ namespace SimplzQuestionnaire.Migrations
                 name: "QuestionnaireUsers",
                 columns: table => new
                 {
-                    QuestionnaireUserId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Username = table.Column<string>(type: "TEXT", nullable: true),
-                    Password = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "TEXT", nullable: true),
+                    Email = table.Column<string>(type: "TEXT", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "TEXT", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestionnaireUsers", x => x.QuestionnaireUserId);
+                    table.PrimaryKey("PK_QuestionnaireUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdentityUserClaim<string>",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true),
+                    QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityUserClaim<string>", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdentityUserClaim<string>_QuestionnaireUsers_QuestionnaireUserId",
+                        column: x => x.QuestionnaireUserId,
+                        principalTable: "QuestionnaireUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -31,7 +63,7 @@ namespace SimplzQuestionnaire.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Code = table.Column<Guid>(type: "TEXT", nullable: false),
                     Progression = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionnaireUserId = table.Column<int>(type: "INTEGER", nullable: false)
+                    QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -40,8 +72,8 @@ namespace SimplzQuestionnaire.Migrations
                         name: "FK_Questionnaires_QuestionnaireUsers_QuestionnaireUserId",
                         column: x => x.QuestionnaireUserId,
                         principalTable: "QuestionnaireUsers",
-                        principalColumn: "QuestionnaireUserId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,7 +125,7 @@ namespace SimplzQuestionnaire.Migrations
                 columns: table => new
                 {
                     AnswerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionnaireUserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: false),
                     TimeTaken = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -109,7 +141,7 @@ namespace SimplzQuestionnaire.Migrations
                         name: "FK_UserAnswers_QuestionnaireUsers_QuestionnaireUserId",
                         column: x => x.QuestionnaireUserId,
                         principalTable: "QuestionnaireUsers",
-                        principalColumn: "QuestionnaireUserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -117,6 +149,11 @@ namespace SimplzQuestionnaire.Migrations
                 name: "IX_Answers_QuestionId",
                 table: "Answers",
                 column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdentityUserClaim<string>_QuestionnaireUserId",
+                table: "IdentityUserClaim<string>",
+                column: "QuestionnaireUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questionnaires_QuestionnaireUserId",
@@ -141,6 +178,9 @@ namespace SimplzQuestionnaire.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "IdentityUserClaim<string>");
+
             migrationBuilder.DropTable(
                 name: "UserAnswers");
 

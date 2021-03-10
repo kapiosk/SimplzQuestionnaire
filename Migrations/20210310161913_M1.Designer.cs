@@ -9,7 +9,7 @@ using SimplzQuestionnaire.Model;
 namespace SimplzQuestionnaire.Migrations
 {
     [DbContext(typeof(SQContext))]
-    [Migration("20210310004501_M1")]
+    [Migration("20210310161913_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,6 +17,31 @@ namespace SimplzQuestionnaire.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.4");
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QuestionnaireUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireUserId");
+
+                    b.ToTable("IdentityUserClaim<string>");
+                });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
                 {
@@ -83,8 +108,8 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<int>("Progression")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("QuestionnaireUserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("QuestionnaireUserId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("QuestionnaireId");
 
@@ -95,28 +120,60 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUser", b =>
                 {
-                    b.Property<int>("QuestionnaireUserId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("QuestionnaireUserId");
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.ToTable("QuestionnaireUsers");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.UserAnswer", b =>
                 {
-                    b.Property<int>("QuestionnaireUserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("QuestionnaireUserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AnswerId")
                         .HasColumnType("INTEGER");
@@ -131,6 +188,13 @@ namespace SimplzQuestionnaire.Migrations
                     b.HasIndex("QuestionnaireUserId", "AnswerId");
 
                     b.ToTable("UserAnswers");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", null)
+                        .WithMany("Claims")
+                        .HasForeignKey("QuestionnaireUserId");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
@@ -159,9 +223,7 @@ namespace SimplzQuestionnaire.Migrations
                 {
                     b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "QuestionnaireUser")
                         .WithMany("Questionnaire")
-                        .HasForeignKey("QuestionnaireUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("QuestionnaireUserId");
 
                     b.Navigation("QuestionnaireUser");
                 });
@@ -197,6 +259,8 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUser", b =>
                 {
+                    b.Navigation("Claims");
+
                     b.Navigation("Questionnaire");
                 });
 #pragma warning restore 612, 618

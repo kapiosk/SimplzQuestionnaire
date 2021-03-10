@@ -8,8 +8,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
 using SimplzQuestionnaire.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace SimplzQuestionnaire.Pages.Authorization
 {
@@ -34,48 +34,43 @@ namespace SimplzQuestionnaire.Pages.Authorization
         }
 
         private readonly SQContext _context;
+        private readonly SignInManager<QuestionnaireUser> _signInManager;
 
-        public LoginModel(SQContext context)
+        public LoginModel(SignInManager<QuestionnaireUser> signInManager, SQContext context)
         {
             _context = context;
+            _signInManager = signInManager;
         }
 
         public void OnGet() { }
-
-        private async Task<bool> LogIn(string username, string password)
-        {
-            var hashedPassword = QuestionnaireUser.ComputeSha256Hash(password);
-            var user = _context.QuestionnaireUsers.FirstOrDefault(x => x.Username.Equals(username) && x.Password.Equals(hashedPassword));
-            if (user is not null)
-            {
-                var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Username),
-                        new Claim(ClaimTypes.NameIdentifier, $"{user.QuestionnaireUserId}" )
-                    };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                return true;
-            }
-            return false;
-        }
 
         public async Task<IActionResult> OnPostLoginAsync(string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
-                if (await LogIn(Input.Username, Input.Password))
+                try
                 {
-                    if (!string.IsNullOrEmpty(returnUrl))
-                        return LocalRedirect(returnUrl);
+                    var user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
+                    var result = await _signInManager.UserManager.CheckPasswordAsync(user, Input.Password);
+                    if (result)
+                    {
+                        var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, user.UserName),
+                                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                            };
 
-                    return LocalRedirect("/");
+                        await _signInManager.SignInWithClaimsAsync(user, true, claims);
+
+                        if (!string.IsNullOrEmpty(returnUrl))
+                            return LocalRedirect(returnUrl);
+
+                        return LocalRedirect("/");
+                    }
                 }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                catch { }
             }
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return Page();
         }
 
@@ -85,16 +80,25 @@ namespace SimplzQuestionnaire.Pages.Authorization
             {
                 try
                 {
-                    var hashedPassword = QuestionnaireUser.ComputeSha256Hash(Input.Password);
-                    await _context.QuestionnaireUsers.AddAsync(new QuestionnaireUser { Username = Input.Username, Password = hashedPassword });
-                    _context.SaveChanges();
+                    var user = new QuestionnaireUser { UserName = Input.Username };
+                    var result = await _signInManager.UserManager.CreateAsync(user, Input.Password);
 
-                    await LogIn(Input.Username, Input.Password);
+                    if (result.Succeeded)
+                    {
 
-                    if (!string.IsNullOrEmpty(returnUrl))
-                        return LocalRedirect(returnUrl);
+                        var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, user.UserName),
+                                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                            };
 
-                    return LocalRedirect("/");
+                        await _signInManager.SignInWithClaimsAsync(user, true, claims);
+
+                        if (!string.IsNullOrEmpty(returnUrl))
+                            return LocalRedirect(returnUrl);
+
+                        return LocalRedirect("/");
+                    }
                 }
                 catch (System.Exception ex)
                 {
