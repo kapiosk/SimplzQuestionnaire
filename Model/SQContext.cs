@@ -15,16 +15,17 @@ namespace SimplzQuestionnaire.Model
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserAnswer>()
-                .HasKey(c => new { c.QuestionnaireUserId, c.AnswerId });
+                .HasKey(c => new { c.UserId, c.AnswerId });
             modelBuilder.Entity<UserAnswer>()
-                .HasIndex(c => new { c.QuestionnaireUserId, c.AnswerId });
+                .HasIndex(c => new { c.UserId, c.AnswerId });
         }
 
-        public DbSet<Questionnaire> Questionnaires { get; set; }
-        public DbSet<Question> Questions { get; set; }
-        public DbSet<Answer> Answers { get; set; }
-        public DbSet<QuestionnaireUser> QuestionnaireUsers { get; set; }
-        public DbSet<UserAnswer> UserAnswers { get; set; }
+        public virtual DbSet<Questionnaire> Questionnaires { get; set; }
+        public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<Answer> Answers { get; set; }
+        public virtual DbSet<QuestionnaireUser> QuestionnaireUsers { get; set; }
+        public virtual DbSet<UserAnswer> UserAnswers { get; set; }
+        public virtual DbSet<QuestionnaireUserClaim> QuestionnaireUserClaims { get; set; }
 
     }
 
@@ -37,58 +38,58 @@ namespace SimplzQuestionnaire.Model
 
     public class Question
     {
-        public int QuestionId { get; set; }
-        public string Description { get; set; }
-        public int Timeout { get; set; }
-        public int QuestionnaireId { get; set; }
-        public int MaxAnswers { get; set; }
-        public int MaxPoints { get; set; }
-        public Questionnaire Questionnaire { get; set; }
-        public ICollection<Answer> Answer { get; set; }
+        public virtual int QuestionId { get; set; }
+        public virtual string Description { get; set; }
+        public virtual int Timeout { get; set; }
+        public virtual int QuestionnaireId { get; set; }
+        public virtual int MaxAnswers { get; set; }
+        public virtual int MaxPoints { get; set; }
+        public virtual Questionnaire Questionnaire { get; set; }
+        public virtual ICollection<Answer> Answer { get; set; }
     }
 
     public class Answer
     {
-        public int AnswerId { get; set; }
-        public string Description { get; set; }
-        public int Points { get; set; }
-        public int QuestionId { get; set; }
-        public Question Question { get; set; }
+        public virtual int AnswerId { get; set; }
+        public virtual string Description { get; set; }
+        public virtual int Points { get; set; }
+        public virtual int QuestionId { get; set; }
+        public virtual Question Question { get; set; }
     }
 
     public class Questionnaire
     {
-        public int QuestionnaireId { get; set; }
-        public string Name { get; set; }
-        public Guid Code { get; set; }
-        public Progression Progression { get; set; }
+        public virtual int QuestionnaireId { get; set; }
+        public virtual string Name { get; set; }
+        public virtual Guid Code { get; set; }
+        public virtual Progression Progression { get; set; }
 
         [ForeignKey("QuestionnaireUser")]
-        public string QuestionnaireUserId { get; set; }
-        public QuestionnaireUser QuestionnaireUser { get; set; }
-        public ICollection<Question> Question { get; set; }
+        public virtual string UserId { get; set; }
+        public virtual QuestionnaireUser QuestionnaireUser { get; set; }
+        public virtual ICollection<Question> Question { get; set; }
     }
 
     public class QuestionnaireUser : IdentityUser
     {
-        [ForeignKey("QuestionnaireUserId")]
-        public ICollection<Questionnaire> Questionnaire { get; set; }
-        public ICollection<IdentityUserClaim<string>> Claims { get; set; }
+        [ForeignKey("UserId")]
+        public virtual ICollection<Questionnaire> Questionnaire { get; set; }
+        public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
     }
 
     public class QuestionnaireUserClaim : IdentityUserClaim<string>
     {
-        public QuestionnaireUser QuestionnaireUser { get; set; }
+        public virtual QuestionnaireUser User { get; set; }
     }
 
     public class UserAnswer
     {
-        public int AnswerId { get; set; }
-        public Answer Answer { get; set; }
+        public virtual int AnswerId { get; set; }
+        public virtual Answer Answer { get; set; }
 
         [ForeignKey("QuestionnaireUser")]
-        public string QuestionnaireUserId { get; set; }
-        public QuestionnaireUser QuestionnaireUser { get; set; }
-        public int TimeTaken { get; set; }
+        public virtual string UserId { get; set; }
+        public virtual QuestionnaireUser QuestionnaireUser { get; set; }
+        public virtual int TimeTaken { get; set; }
     }
 }

@@ -41,6 +41,7 @@ namespace SimplzQuestionnaire.Migrations
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
                     ClaimType = table.Column<string>(type: "TEXT", nullable: true),
                     ClaimValue = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", nullable: false),
                     QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -49,6 +50,12 @@ namespace SimplzQuestionnaire.Migrations
                     table.ForeignKey(
                         name: "FK_IdentityUserClaim<string>_QuestionnaireUsers_QuestionnaireUserId",
                         column: x => x.QuestionnaireUserId,
+                        principalTable: "QuestionnaireUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_IdentityUserClaim<string>_QuestionnaireUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "QuestionnaireUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -63,14 +70,14 @@ namespace SimplzQuestionnaire.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Code = table.Column<Guid>(type: "TEXT", nullable: false),
                     Progression = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Questionnaires", x => x.QuestionnaireId);
                     table.ForeignKey(
-                        name: "FK_Questionnaires_QuestionnaireUsers_QuestionnaireUserId",
-                        column: x => x.QuestionnaireUserId,
+                        name: "FK_Questionnaires_QuestionnaireUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "QuestionnaireUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -125,12 +132,12 @@ namespace SimplzQuestionnaire.Migrations
                 columns: table => new
                 {
                     AnswerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionnaireUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     TimeTaken = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAnswers", x => new { x.QuestionnaireUserId, x.AnswerId });
+                    table.PrimaryKey("PK_UserAnswers", x => new { x.UserId, x.AnswerId });
                     table.ForeignKey(
                         name: "FK_UserAnswers_Answers_AnswerId",
                         column: x => x.AnswerId,
@@ -138,8 +145,8 @@ namespace SimplzQuestionnaire.Migrations
                         principalColumn: "AnswerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserAnswers_QuestionnaireUsers_QuestionnaireUserId",
-                        column: x => x.QuestionnaireUserId,
+                        name: "FK_UserAnswers_QuestionnaireUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "QuestionnaireUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -156,9 +163,14 @@ namespace SimplzQuestionnaire.Migrations
                 column: "QuestionnaireUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questionnaires_QuestionnaireUserId",
+                name: "IX_IdentityUserClaim<string>_UserId",
+                table: "IdentityUserClaim<string>",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questionnaires_UserId",
                 table: "Questionnaires",
-                column: "QuestionnaireUserId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_QuestionnaireId",
@@ -171,9 +183,9 @@ namespace SimplzQuestionnaire.Migrations
                 column: "AnswerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserAnswers_QuestionnaireUserId_AnswerId",
+                name: "IX_UserAnswers_UserId_AnswerId",
                 table: "UserAnswers",
-                columns: new[] { "QuestionnaireUserId", "AnswerId" });
+                columns: new[] { "UserId", "AnswerId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

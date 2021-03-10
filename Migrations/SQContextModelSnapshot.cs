@@ -28,6 +28,10 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("QuestionnaireUserId")
                         .HasColumnType("TEXT");
 
@@ -39,6 +43,8 @@ namespace SimplzQuestionnaire.Migrations
                     b.HasIndex("QuestionnaireUserId");
 
                     b.ToTable("IdentityUserClaim<string>");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserClaim<string>");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
@@ -106,12 +112,12 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<int>("Progression")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("QuestionnaireUserId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("QuestionnaireId");
 
-                    b.HasIndex("QuestionnaireUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Questionnaires");
                 });
@@ -170,7 +176,7 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.UserAnswer", b =>
                 {
-                    b.Property<string>("QuestionnaireUserId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AnswerId")
@@ -179,13 +185,22 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<int>("TimeTaken")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("QuestionnaireUserId", "AnswerId");
+                    b.HasKey("UserId", "AnswerId");
 
                     b.HasIndex("AnswerId");
 
-                    b.HasIndex("QuestionnaireUserId", "AnswerId");
+                    b.HasIndex("UserId", "AnswerId");
 
                     b.ToTable("UserAnswers");
+                });
+
+            modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUserClaim", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>");
+
+                    b.HasIndex("UserId");
+
+                    b.HasDiscriminator().HasValue("QuestionnaireUserClaim");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -221,7 +236,7 @@ namespace SimplzQuestionnaire.Migrations
                 {
                     b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "QuestionnaireUser")
                         .WithMany("Questionnaire")
-                        .HasForeignKey("QuestionnaireUserId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("QuestionnaireUser");
                 });
@@ -236,13 +251,22 @@ namespace SimplzQuestionnaire.Migrations
 
                     b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "QuestionnaireUser")
                         .WithMany()
-                        .HasForeignKey("QuestionnaireUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Answer");
 
                     b.Navigation("QuestionnaireUser");
+                });
+
+            modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUserClaim", b =>
+                {
+                    b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>
