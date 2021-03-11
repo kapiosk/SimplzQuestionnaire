@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimplzQuestionnaire.Model
 {
-    // Add-Migration M4 -v
+    // Add-Migration M5 -v
     public class SQContext : DbContext
     {
         public SQContext(DbContextOptions<SQContext> options) : base(options) { }
@@ -87,6 +87,7 @@ namespace SimplzQuestionnaire.Model
     {
         public virtual int AnswerId { get; set; }
         public virtual Answer Answer { get; set; }
+        public virtual string TextAnswer { get; set; }
 
         [ForeignKey("QuestionnaireUser")]
         public virtual string UserId { get; set; }
