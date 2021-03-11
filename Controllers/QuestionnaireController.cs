@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SimplzQuestionnaire.Model;
 
@@ -15,12 +15,11 @@ namespace SimplzQuestionnaire.Controllers
         }
 
         [HttpGet("ActiveQuestion/{QuestionnaireId}")]
-        public async Task<int> GetActiveQuestion([FromRoute] int QuestionnaireId)
+        public int GetActiveQuestion([FromRoute] int QuestionnaireId)
         {
-            int activeQuestionId = 0;
-            var questionnaire = await _context.Questionnaires.FindAsync(QuestionnaireId);
-            if (questionnaire is not null && questionnaire.ActiveQuestionId.HasValue) activeQuestionId = questionnaire.ActiveQuestionId.Value;
-            return activeQuestionId;
+            return (from it in _context.Questionnaires
+                    where it.QuestionnaireId == QuestionnaireId
+                    select it.ActiveQuestionId).FirstOrDefault();
         }
     }
 }

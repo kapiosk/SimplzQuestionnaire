@@ -1,0 +1,55 @@
+﻿@page "{QuestionnaireId}"
+@model SimplzQuestionnaire.Pages.Questions.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create" asp-route-QuestionnaireId="@Model.QuestionnaireId">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].Timeout)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].MaxAnswers)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].MaxPoints)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Question)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Timeout)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxAnswers)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxPoints)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a> |
+                    <a asp-page="./Details" asp-route-QuestionId="@item.QuestionId">Details</a> |
+                    <a asp-page="./Delete" asp-route-QuestionId="@item.QuestionId" asp-route-QuestionnaireId="@Model.QuestionnaireId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

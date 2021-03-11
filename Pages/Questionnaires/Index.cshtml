@@ -37,8 +37,10 @@
                 </td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@item.QuestionnaireId">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.QuestionnaireId">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.QuestionnaireId">Delete</a>
+                    <a asp-page="./Active" asp-route-QuestionnaireCode="@item.Code">Active</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.QuestionnaireId">Delete</a> |
+                    <a asp-page="/Questions/Index" asp-route-QuestionnaireId="@item.QuestionnaireId">Questions</a> |
+                    <a href="@Model.QRURL@Common.Utilities.Base64Encode(Model.QRURL + item.QuestionnaireId.ToString())">QR Code</a>
                 </td>
             </tr>
         }

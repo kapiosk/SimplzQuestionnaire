@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace SimplzQuestionnaire.Pages.Questionnaires
 {
-    public class FillModel : PageModel
+    public class ActiveModel : PageModel
     {
+        [BindProperty(SupportsGet = true)]
+        public int QuestionnaireCode { get; set; }
         public void OnGet()
         {
         }
