@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>28537162-a921-44c4-a6d1-b3d843fdedec</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AppData\" />
+    <Folder Include="wwwroot\AppData\" />
   </ItemGroup>
 
 </Project>

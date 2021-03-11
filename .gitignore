@@ -1,4 +1,7 @@
 .vs
 bin
 obj
-AppData
+wwwroot/AppData
+.config
+Properties/PublishProfiles
+Properties/ServiceDependencies

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimplzQuestionnaire.Model
 {
-    // Add-Migration M3 -v
+    // Add-Migration M4 -v
     public class SQContext : DbContext
     {
         public SQContext(DbContextOptions<SQContext> options) : base(options) { }
