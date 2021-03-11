@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SimplzQuestionnaire.Pages.Questionnaire
+namespace SimplzQuestionnaire.Pages.Questionnaires
 {
-    public class FillModel : PageModel
+    public class ReviewModel : PageModel
     {
         public void OnGet()
         {
