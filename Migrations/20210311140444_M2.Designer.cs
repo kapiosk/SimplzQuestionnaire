@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimplzQuestionnaire.Model;
 
 namespace SimplzQuestionnaire.Migrations
 {
     [DbContext(typeof(SQContext))]
-    partial class SQContextModelSnapshot : ModelSnapshot
+    [Migration("20210311140444_M2")]
+    partial class M2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,7 +105,7 @@ namespace SimplzQuestionnaire.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ActiveQuestionId")
+                    b.Property<int>("ActiveQuestionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("Code")
@@ -216,7 +218,7 @@ namespace SimplzQuestionnaire.Migrations
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
                 {
                     b.HasOne("SimplzQuestionnaire.Model.Question", "Question")
-                        .WithMany("Answers")
+                        .WithMany("Answer")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -227,7 +229,7 @@ namespace SimplzQuestionnaire.Migrations
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>
                 {
                     b.HasOne("SimplzQuestionnaire.Model.Questionnaire", "Questionnaire")
-                        .WithMany("Questions")
+                        .WithMany("Question")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -238,7 +240,7 @@ namespace SimplzQuestionnaire.Migrations
             modelBuilder.Entity("SimplzQuestionnaire.Model.Questionnaire", b =>
                 {
                     b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "QuestionnaireUser")
-                        .WithMany("Questionnaires")
+                        .WithMany("Questionnaire")
                         .HasForeignKey("UserId");
 
                     b.Navigation("QuestionnaireUser");
@@ -274,19 +276,19 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>
                 {
-                    b.Navigation("Answers");
+                    b.Navigation("Answer");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Questionnaire", b =>
                 {
-                    b.Navigation("Questions");
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUser", b =>
                 {
                     b.Navigation("Claims");
 
-                    b.Navigation("Questionnaires");
+                    b.Navigation("Questionnaire");
                 });
 #pragma warning restore 612, 618
         }
