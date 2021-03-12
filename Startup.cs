@@ -28,34 +28,37 @@ namespace SimplzQuestionnaire
             services.AddHttpContextAccessor();
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
-            services.AddDbContext<Model.SQContext>(
-                opts => opts.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<Model.SQContext>(opts => opts.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddControllers().AddJsonOptions(
-                opt =>
-                {
-                    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
-                    opt.JsonSerializerOptions.AllowTrailingCommas = true;
-                    opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-                }
-            );
+            services.AddControllers()
+                    .AddJsonOptions(opt =>
+                    {
+                        opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+                        opt.JsonSerializerOptions.AllowTrailingCommas = true;
+                        opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                    });
 
             services.AddAntiforgery(x => x.HeaderName = Configuration["Antiforgery"]);
-            services.AddRazorPages(
-                opts =>
-                {
-                    opts.Conventions.AuthorizeFolder("/");
-                    opts.Conventions.AllowAnonymousToPage("/Authorization/Login");
-                });
+            services.AddRazorPages( opts =>
+            {
+                opts.Conventions.AuthorizeFolder("/");
+                opts.Conventions.AllowAnonymousToPage("/Authorization/Login");
+            });
 
             services.AddScoped<SignInManager<Model.QuestionnaireUser>>();
 
             services.AddIdentityCore<Model.QuestionnaireUser>(opts => Configuration.Bind("IdentityCoreSettings", opts))
-                .AddEntityFrameworkStores<Model.SQContext>();
+                    .AddEntityFrameworkStores<Model.SQContext>();
 
             services.AddAuthentication(IdentityConstants.ApplicationScheme)
                     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => Configuration.Bind("JwtSettings", opts))
                     .AddCookie(IdentityConstants.ApplicationScheme, opts => Configuration.Bind("CookieSettings", opts));
+
+            services.Configure<CookiePolicyOptions>(opts =>
+            {
+                opts.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+                opts.Secure = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -75,7 +78,7 @@ namespace SimplzQuestionnaire
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseCookiePolicy();
             app.UseAuthentication();
             app.UseAuthorization();
 
