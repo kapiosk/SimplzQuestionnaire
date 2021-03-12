@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SimplzQuestionnaire.Migrations
 {
-    public partial class M1 : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,6 +70,7 @@ namespace SimplzQuestionnaire.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Code = table.Column<Guid>(type: "TEXT", nullable: false),
                     Progression = table.Column<int>(type: "INTEGER", nullable: false),
+                    ActiveQuestionId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -91,9 +92,9 @@ namespace SimplzQuestionnaire.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Timeout = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionnaireId = table.Column<int>(type: "INTEGER", nullable: false),
                     MaxAnswers = table.Column<int>(type: "INTEGER", nullable: false),
-                    MaxPoints = table.Column<int>(type: "INTEGER", nullable: false)
+                    MaxPoints = table.Column<int>(type: "INTEGER", nullable: false),
+                    QuestionnaireId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,11 +115,19 @@ namespace SimplzQuestionnaire.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Points = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuestionId = table.Column<int>(type: "INTEGER", nullable: false)
+                    IsCustomAnswer = table.Column<bool>(type: "INTEGER", nullable: false),
+                    QuestionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AnswerId1 = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Answers", x => x.AnswerId);
+                    table.ForeignKey(
+                        name: "FK_Answers_Answers_AnswerId1",
+                        column: x => x.AnswerId1,
+                        principalTable: "Answers",
+                        principalColumn: "AnswerId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Answers_Questions_QuestionId",
                         column: x => x.QuestionId,
@@ -133,7 +142,9 @@ namespace SimplzQuestionnaire.Migrations
                 {
                     AnswerId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    TimeTaken = table.Column<int>(type: "INTEGER", nullable: false)
+                    TextAnswer = table.Column<string>(type: "TEXT", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -151,6 +162,11 @@ namespace SimplzQuestionnaire.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_AnswerId1",
+                table: "Answers",
+                column: "AnswerId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",

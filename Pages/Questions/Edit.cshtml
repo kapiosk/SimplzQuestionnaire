@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{QuestionnaireId}/{QuestionId}"
 @model SimplzQuestionnaire.Pages.Questions.EditModel
 
 @{
@@ -34,11 +34,17 @@
                 <input asp-for="Question.MaxPoints" class="form-control" />
                 <span asp-validation-for="Question.MaxPoints" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Question.AcceptsCustomAnswer" /> @Html.DisplayNameFor(model => model.Question.AcceptsCustomAnswer)
+                </label>
+            </div>
+            <input type="hidden" asp-for="Question.QuestionnaireId" />
+            @*<div class="form-group">
                 <label asp-for="Question.QuestionnaireId" class="control-label"></label>
                 <select asp-for="Question.QuestionnaireId" class="form-control" asp-items="ViewBag.QuestionnaireId"></select>
                 <span asp-validation-for="Question.QuestionnaireId" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -47,7 +53,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="Index" asp-route-QuestionnaireId="@Model.QuestionnaireId">Back to List</a>
 </div>
 
 @section Scripts {

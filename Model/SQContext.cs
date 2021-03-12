@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimplzQuestionnaire.Model
 {
-    // Add-Migration M6 -v
+    // Add-Migration Init -v
     public class SQContext : DbContext
     {
         public SQContext(DbContextOptions<SQContext> options) : base(options) { }
@@ -43,6 +43,7 @@ namespace SimplzQuestionnaire.Model
         public virtual int Timeout { get; set; }
         public virtual int MaxAnswers { get; set; }
         public virtual int MaxPoints { get; set; }
+        public virtual bool AcceptsCustomAnswer { get; set; }
         public virtual int QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
@@ -53,8 +54,10 @@ namespace SimplzQuestionnaire.Model
         public virtual int AnswerId { get; set; }
         public virtual string Description { get; set; }
         public virtual int Points { get; set; }
+        public virtual bool IsCustomAnswer { get; set; }
         public virtual int QuestionId { get; set; }
         public virtual Question Question { get; set; }
+        public virtual ICollection<Answer> Answers { get; set; }
     }
 
     public class Questionnaire
@@ -92,6 +95,7 @@ namespace SimplzQuestionnaire.Model
         [ForeignKey("QuestionnaireUser")]
         public virtual string UserId { get; set; }
         public virtual QuestionnaireUser QuestionnaireUser { get; set; }
-        public virtual int TimeTaken { get; set; }
+        public virtual DateTime StartTime { get; set; }
+        public virtual DateTime EndTime { get; set; }
     }
 }

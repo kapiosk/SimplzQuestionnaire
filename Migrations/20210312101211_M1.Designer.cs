@@ -9,8 +9,8 @@ using SimplzQuestionnaire.Model;
 namespace SimplzQuestionnaire.Migrations
 {
     [DbContext(typeof(SQContext))]
-    [Migration("20210311140444_M2")]
-    partial class M2
+    [Migration("20210312101211_M1")]
+    partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,8 +55,14 @@ namespace SimplzQuestionnaire.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AnswerId1")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCustomAnswer")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Points")
                         .HasColumnType("INTEGER");
@@ -65,6 +71,8 @@ namespace SimplzQuestionnaire.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("AnswerId");
+
+                    b.HasIndex("AnswerId1");
 
                     b.HasIndex("QuestionId");
 
@@ -75,6 +83,9 @@ namespace SimplzQuestionnaire.Migrations
                 {
                     b.Property<int>("QuestionId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("AcceptsCustomAnswer")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
@@ -187,8 +198,14 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<int>("AnswerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TimeTaken")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TextAnswer")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "AnswerId");
 
@@ -217,8 +234,12 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
                 {
+                    b.HasOne("SimplzQuestionnaire.Model.Answer", null)
+                        .WithMany("Answers")
+                        .HasForeignKey("AnswerId1");
+
                     b.HasOne("SimplzQuestionnaire.Model.Question", "Question")
-                        .WithMany("Answer")
+                        .WithMany("Answers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -229,7 +250,7 @@ namespace SimplzQuestionnaire.Migrations
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>
                 {
                     b.HasOne("SimplzQuestionnaire.Model.Questionnaire", "Questionnaire")
-                        .WithMany("Question")
+                        .WithMany("Questions")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -240,7 +261,7 @@ namespace SimplzQuestionnaire.Migrations
             modelBuilder.Entity("SimplzQuestionnaire.Model.Questionnaire", b =>
                 {
                     b.HasOne("SimplzQuestionnaire.Model.QuestionnaireUser", "QuestionnaireUser")
-                        .WithMany("Questionnaire")
+                        .WithMany("Questionnaires")
                         .HasForeignKey("UserId");
 
                     b.Navigation("QuestionnaireUser");
@@ -274,21 +295,26 @@ namespace SimplzQuestionnaire.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>
                 {
-                    b.Navigation("Answer");
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Questionnaire", b =>
                 {
-                    b.Navigation("Question");
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.QuestionnaireUser", b =>
                 {
                     b.Navigation("Claims");
 
-                    b.Navigation("Questionnaire");
+                    b.Navigation("Questionnaires");
                 });
 #pragma warning restore 612, 618
         }

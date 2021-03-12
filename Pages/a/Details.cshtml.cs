@@ -5,22 +5,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Model;
 
-namespace SimplzQuestionnaire.Pages.Questions
+namespace SimplzQuestionnaire.Pages.a
 {
     public class DetailsModel : PageModel
     {
-        private readonly ICurrentUserService _currentUser;
-        private readonly SQContext _context;
-        public DetailsModel(ICurrentUserService currentUser, SQContext context)
+        private readonly SimplzQuestionnaire.Model.SQContext _context;
+
+        public DetailsModel(SimplzQuestionnaire.Model.SQContext context)
         {
-            _currentUser = currentUser;
             _context = context;
         }
 
-        public Question Question { get; set; }
+        public Answer Answer { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,10 +27,10 @@ namespace SimplzQuestionnaire.Pages.Questions
                 return NotFound();
             }
 
-            Question = await _context.Questions
-                .Include(q => q.Questionnaire).FirstOrDefaultAsync(m => m.QuestionId == id);
+            Answer = await _context.Answers
+                .Include(a => a.Question).FirstOrDefaultAsync(m => m.AnswerId == id);
 
-            if (Question == null)
+            if (Answer == null)
             {
                 return NotFound();
             }

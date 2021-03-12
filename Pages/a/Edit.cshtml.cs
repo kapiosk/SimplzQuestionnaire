@@ -6,38 +6,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Model;
 
-namespace SimplzQuestionnaire.Pages.Questions
+namespace SimplzQuestionnaire.Pages.a
 {
     public class EditModel : PageModel
     {
-        [BindProperty(SupportsGet = true)]
-        public int QuestionnaireId { get; set; }
-        [BindProperty(SupportsGet = true)]
-        public int QuestionId { get; set; }
-        private readonly ICurrentUserService _currentUser;
-        private readonly SQContext _context;
-        public EditModel(ICurrentUserService currentUser, SQContext context)
+        private readonly SimplzQuestionnaire.Model.SQContext _context;
+
+        public EditModel(SimplzQuestionnaire.Model.SQContext context)
         {
-            _currentUser = currentUser;
             _context = context;
         }
 
         [BindProperty]
-        public Question Question { get; set; }
+        public Answer Answer { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Question = await _context.Questions
-                .Include(q => q.Questionnaire).FirstOrDefaultAsync(m => m.QuestionId == QuestionId);
-
-            if (Question == null)
+            if (id == null)
             {
                 return NotFound();
             }
-           
+
+            Answer = await _context.Answers
+                .Include(a => a.Question).FirstOrDefaultAsync(m => m.AnswerId == id);
+
+            if (Answer == null)
+            {
+                return NotFound();
+            }
+           ViewData["QuestionId"] = new SelectList(_context.Questions, "QuestionId", "QuestionId");
             return Page();
         }
 
@@ -50,7 +49,7 @@ namespace SimplzQuestionnaire.Pages.Questions
                 return Page();
             }
 
-            _context.Attach(Question).State = EntityState.Modified;
+            _context.Attach(Answer).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +57,7 @@ namespace SimplzQuestionnaire.Pages.Questions
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!QuestionExists(Question.QuestionId))
+                if (!AnswerExists(Answer.AnswerId))
                 {
                     return NotFound();
                 }
@@ -68,12 +67,12 @@ namespace SimplzQuestionnaire.Pages.Questions
                 }
             }
 
-            return RedirectToPage("./Index", new { QuestionnaireId });
+            return RedirectToPage("./Index");
         }
 
-        private bool QuestionExists(int id)
+        private bool AnswerExists(int id)
         {
-            return _context.Questions.Any(e => e.QuestionId == id);
+            return _context.Answers.Any(e => e.AnswerId == id);
         }
     }
 }

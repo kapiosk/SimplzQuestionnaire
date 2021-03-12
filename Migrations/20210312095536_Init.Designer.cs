@@ -9,8 +9,8 @@ using SimplzQuestionnaire.Model;
 namespace SimplzQuestionnaire.Migrations
 {
     [DbContext(typeof(SQContext))]
-    [Migration("20210311160744_M4")]
-    partial class M4
+    [Migration("20210312095536_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,8 +55,14 @@ namespace SimplzQuestionnaire.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AnswerId1")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCustomAnswer")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Points")
                         .HasColumnType("INTEGER");
@@ -65,6 +71,8 @@ namespace SimplzQuestionnaire.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("AnswerId");
+
+                    b.HasIndex("AnswerId1");
 
                     b.HasIndex("QuestionId");
 
@@ -105,7 +113,7 @@ namespace SimplzQuestionnaire.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ActiveQuestionId")
+                    b.Property<int>("ActiveQuestionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("Code")
@@ -187,11 +195,14 @@ namespace SimplzQuestionnaire.Migrations
                     b.Property<int>("AnswerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TextAnswer")
+                    b.Property<DateTime>("EndTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TimeTaken")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TextAnswer")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "AnswerId");
 
@@ -220,6 +231,10 @@ namespace SimplzQuestionnaire.Migrations
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
                 {
+                    b.HasOne("SimplzQuestionnaire.Model.Answer", null)
+                        .WithMany("Answers")
+                        .HasForeignKey("AnswerId1");
+
                     b.HasOne("SimplzQuestionnaire.Model.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
@@ -275,6 +290,11 @@ namespace SimplzQuestionnaire.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SimplzQuestionnaire.Model.Answer", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("SimplzQuestionnaire.Model.Question", b =>

@@ -2,23 +2,23 @@
 
 namespace SimplzQuestionnaire.Migrations
 {
-    public partial class M2 : Migration
+    public partial class M1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "ActiveQuestionId",
-                table: "Questionnaires",
+            migrationBuilder.AddColumn<bool>(
+                name: "AcceptsCustomAnswer",
+                table: "Questions",
                 type: "INTEGER",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ActiveQuestionId",
-                table: "Questionnaires");
+                name: "AcceptsCustomAnswer",
+                table: "Questions");
         }
     }
 }

@@ -48,7 +48,7 @@ namespace SimplzQuestionnaire.Pages.Questions
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index", new { QuestionnaireId = QuestionnaireId });
+            return RedirectToPage("./Index", new { QuestionnaireId });
         }
     }
 }

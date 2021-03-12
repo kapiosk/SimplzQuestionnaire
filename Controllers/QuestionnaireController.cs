@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SimplzQuestionnaire.Model;
 
 namespace SimplzQuestionnaire.Controllers
@@ -20,6 +21,14 @@ namespace SimplzQuestionnaire.Controllers
             return (from it in _context.Questionnaires
                     where it.QuestionnaireId == QuestionnaireId
                     select it.ActiveQuestionId).FirstOrDefault();
+        }
+
+        [HttpGet("QuestionAnswerCount/{QuestionId}")]
+        public int GetQuestionAnswerCount([FromRoute] int QuestionId)
+        {
+            return (from it in _context.UserAnswers.Include(ua=>ua.Answer)
+                    where it.Answer.QuestionId == QuestionId
+                    select it.UserId).Count();
         }
     }
 }
