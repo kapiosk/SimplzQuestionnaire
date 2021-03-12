@@ -10,7 +10,7 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
     public class ActiveModel : PageModel
     {
         [BindProperty(SupportsGet = true)]
-        public int QuestionnaireCode { get; set; }
+        public string QuestionnaireCode { get; set; }
         public void OnGet()
         {
         }
