@@ -45,8 +45,8 @@
                     @Html.DisplayFor(modelItem => item.MaxPoints)
                 </td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a> |
-                    <a asp-page="./Details" asp-route-QuestionId="@item.QuestionId">Details</a> |
+                    @*<a asp-page="./Edit" asp-route-id="@item.QuestionId">Edit</a> |
+                    <a asp-page="./Details" asp-route-QuestionId="@item.QuestionId">Details</a> |*@
                     <a asp-page="./Delete" asp-route-QuestionId="@item.QuestionId" asp-route-QuestionnaireId="@Model.QuestionnaireId">Delete</a>
                 </td>
             </tr>
