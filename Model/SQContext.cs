@@ -58,6 +58,9 @@ namespace SimplzQuestionnaire.Model
         public virtual int QuestionId { get; set; }
         public virtual Question Question { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
+
+        [NotMapped]
+        public virtual bool IsSelected { get; set; }
     }
 
     public class Questionnaire

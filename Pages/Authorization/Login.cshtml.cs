@@ -37,7 +37,10 @@ namespace SimplzQuestionnaire.Pages.Authorization
             _signInManager = signInManager;
         }
 
-        public void OnGet() { }
+        public async Task<IActionResult> OnGet() 
+        {
+            return await Task.FromResult(Page());
+        }
 
         public async Task<IActionResult> OnPostLoginAsync(string returnUrl = null)
         {
