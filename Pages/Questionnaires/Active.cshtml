@@ -26,6 +26,8 @@
             <input type="hidden" asp-for="Question.MaxAnswers" />
             <input type="hidden" asp-for="Question.QuestionnaireId" />
             <input type="hidden" asp-for="Question.Timeout" />
+            <input type="hidden" asp-for="Answer.AnswerId" />
+            <input type="hidden" asp-for="Answer.QuestionId" />
             <div class="form-group">
                 <label asp-for="Answer.Description" class="control-label">@Model.Question.Description</label>
                 <input asp-for="Answer.Description" class="form-control" />

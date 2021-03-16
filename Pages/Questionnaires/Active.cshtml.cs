@@ -44,6 +44,14 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (ModelState.IsValid)
+            {
+                _context.Attach(Answer).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            
+            Bind();
+
             return await Task.FromResult(Page());
         }
 
