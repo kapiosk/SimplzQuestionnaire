@@ -31,10 +31,11 @@
             @Html.DisplayFor(model => model.Questionnaire.Progression)
         </dd>
     </dl>
-    
-    <form method="post">
+
+    @using (Html.BeginForm())
+    {
         <input type="hidden" asp-for="Questionnaire.QuestionnaireId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" />
         <a asp-page="./Index">Back to List</a>
-    </form>
+    }
 </div>

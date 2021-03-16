@@ -44,9 +44,10 @@
         </dd>
     </dl>
 
-    <form method="post">
+    @using (Html.BeginForm())
+    {
         <input type="hidden" asp-for="Question.QuestionId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" />
         <a asp-page="Index" asp-route-QuestionnaireId="@Model.QuestionnaireId">Back to List</a>
-    </form>
+    }
 </div>
