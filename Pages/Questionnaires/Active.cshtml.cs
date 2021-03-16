@@ -49,7 +49,22 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
                 _context.Attach(Answer).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
-            
+
+            Bind();
+
+            return await Task.FromResult(Page());
+        }
+
+        public async Task<IActionResult> OnPostChangeActiveAsync()
+        {
+            if (ModelState.IsValid)
+            {
+                var questionnaire = _context.Questionnaires.FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId);
+                questionnaire.ActiveQuestionId = QuestionId;
+                _context.Attach(questionnaire).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+
             Bind();
 
             return await Task.FromResult(Page());
@@ -72,9 +87,9 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
             if (IsAdmin)
             {
                 Questions = _context.Questionnaires
-                                        .Include(q => q.Questions)
-                                        .FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId)
-                                        .Questions.Select(q => new SelectListItem { Text = q.Description, Value = q.QuestionId.ToString() });
+                                    .Include(q => q.Questions)
+                                    .FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId)
+                                    .Questions.Select(q => new SelectListItem { Text = q.Description, Value = q.QuestionId.ToString() });
             }
 
             Answer = (from ua in _context.UserAnswers

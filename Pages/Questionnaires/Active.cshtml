@@ -7,7 +7,7 @@
 
 <h1>Active Question</h1>
 
-<h4>Question @Model.QuestionId</h4>
+<h4>Question @Model.Question.QuestionId</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -21,9 +21,12 @@
                     <select asp-for="QuestionId" class="form-control" asp-items="Model.Questions"></select>
                     <span asp-validation-for="QuestionId" class="text-danger"></span>
                 </div>
+                <div class="mt-2">
+                    <input type="submit" value="Change Active" class="btn btn-primary" asp-page-handler="ChangeActive"/>
+                </div>
                 <hr />
             }
-            <input type="hidden" asp-for="QuestionId" />
+            <input type="hidden" asp-for="Question.QuestionId" />
             <input type="hidden" asp-for="Question.AcceptsCustomAnswer" />
             <input type="hidden" asp-for="Question.MaxAnswers" />
             <input type="hidden" asp-for="Question.QuestionnaireId" />
@@ -37,13 +40,39 @@
                 @*@Html.LabelFor(m => m.Answer.Description, Model.Question.Description)
                 @Html.EditorFor(m => m.Answer.Description, new { autocomplete = "off" })*@
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save & Continue" class="btn btn-primary" />
+            <div class="mt-2">
+                <input id="btnSave" type="submit" value="Save & Continue" class="btn btn-primary" />
             </div>
         }
     </div>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var maxTime = @Model.Question.Timeout;
+        var elapsedTime = 0;
+        var path = window.location.pathname.split("/");
+        var qId = path.pop();
+        function CheckActive() {
+            elapsedTime += 1;
+            if (maxTime > 0 && elapsedTime > maxTime) {
+                document.getElementById("btnSave").disabled = true;
+            }
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText + ' ' + (qId == this.responseText));
+                    if (qId != this.responseText) {
+                        path.push(this.responseText);
+                        window.location.href = path.join("/");
+                    }
+                }
+            };
+            xhttp.open("GET", "/API/Questionnaire/ActiveQuestion/@Model.Question.QuestionnaireId", true);
+            xhttp.send();
+            setTimeout(CheckActive, 1000)
+        }
+        CheckActive();
+    </script>
 }
