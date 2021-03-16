@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Model;
 
@@ -21,8 +24,8 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
         [BindProperty(SupportsGet = true)]
         public int QuestionId { get; set; }
 
-        public int PreviousQuestionId { get; set; }
-        public int NextQuestionId { get; set; }
+        [BindProperty]
+        public IEnumerable<SelectListItem> Questions { get; set; }
 
         private readonly ICurrentUserService _currentUser;
         private readonly SQContext _context;
@@ -57,6 +60,14 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
 
             if (Question is null)
                 Question = _context.Questions.FirstOrDefault(q => q.QuestionnaireId == questionnaire.QuestionnaireId);
+
+            if (IsAdmin)
+            {
+                Questions = _context.Questionnaires
+                                        .Include(q => q.Questions)
+                                        .FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId)
+                                        .Questions.Select(q => new SelectListItem { Text = q.Description, Value = q.QuestionId.ToString() });
+            }
 
             Answer = (from ua in _context.UserAnswers
                       where ua.UserId == _currentUser.UserId

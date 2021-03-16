@@ -12,6 +12,15 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post">
+            @if (Model.IsAdmin)
+            {
+                <div class="form-group">
+                    <label asp-for="QuestionId" class="control-label">Active Question</label>
+                    <select asp-for="QuestionId" class="form-control" asp-items="Model.Questions"></select>
+                    <span asp-validation-for="QuestionId" class="text-danger"></span>
+                </div>
+                <hr />
+            }
             <input type="hidden" asp-for="QuestionId" />
             <input type="hidden" asp-for="Question.AcceptsCustomAnswer" />
             <input type="hidden" asp-for="Question.MaxAnswers" />
