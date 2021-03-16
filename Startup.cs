@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SimplzQuestionnaire.Interfaces;
-using SimplzQuestionnaire.Services;
+using SimplzQuestionnaire.CMS;
 
 namespace SimplzQuestionnaire
 {
@@ -22,26 +21,9 @@ namespace SimplzQuestionnaire
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration);
-            services.AddHttpContextAccessor();
-            services.AddSingleton<ICurrentUserService, CurrentUserService>();
+            services.AddApplication(Configuration);
 
             services.AddDbContext<Model.SQContext>(opts => opts.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddControllers()
-                    .AddJsonOptions(opt =>
-                    {
-                        opt.JsonSerializerOptions.PropertyNamingPolicy = null;
-                        opt.JsonSerializerOptions.AllowTrailingCommas = true;
-                        opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-                    });
-
-            services.AddAntiforgery(x => x.HeaderName = Configuration["Antiforgery"]);
-            services.AddRazorPages(opts =>
-            {
-                opts.Conventions.AuthorizeFolder("/");
-                opts.Conventions.AllowAnonymousToPage("/Authorization/Login");
-            });
 
             services.AddScoped<SignInManager<Model.QuestionnaireUser>>();
 
@@ -51,12 +33,6 @@ namespace SimplzQuestionnaire
             services.AddAuthentication(IdentityConstants.ApplicationScheme)
                     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => Configuration.Bind("JwtSettings", opts))
                     .AddCookie(IdentityConstants.ApplicationScheme, opts => Configuration.Bind("CookieSettings", opts));
-
-            services.Configure<CookiePolicyOptions>(opts =>
-            {
-                opts.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
-                opts.Secure = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
