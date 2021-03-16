@@ -75,6 +75,16 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
                       where a.QuestionId == Question.QuestionId
                       select a).FirstOrDefault();
 
+            if (Answer is null)
+            {
+                Answer = new() { QuestionId = Question.QuestionId };
+                _context.Answers.Add(Answer);
+                _context.SaveChanges();
+                UserAnswer userAnswer = new() { AnswerId = Answer.AnswerId, UserId = _currentUser.UserId };
+                _context.UserAnswers.Add(userAnswer);
+                _context.SaveChanges();
+            }
+
 
         }
     }

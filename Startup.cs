@@ -37,7 +37,7 @@ namespace SimplzQuestionnaire
                     });
 
             services.AddAntiforgery(x => x.HeaderName = Configuration["Antiforgery"]);
-            services.AddRazorPages( opts =>
+            services.AddRazorPages(opts =>
             {
                 opts.Conventions.AuthorizeFolder("/");
                 opts.Conventions.AllowAnonymousToPage("/Authorization/Login");
