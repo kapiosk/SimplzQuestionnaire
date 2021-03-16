@@ -13,6 +13,7 @@
     <div class="col-md-4">
         @using (Html.BeginForm())
         {
+            @Html.ValidationSummary()
             @if (Model.IsAdmin)
             {
                 <div class="form-group">
@@ -31,8 +32,10 @@
             <input type="hidden" asp-for="Answer.QuestionId" />
             <div class="form-group">
                 <label asp-for="Answer.Description" class="control-label">@Model.Question.Description</label>
-                <input asp-for="Answer.Description" class="form-control" />
+                <input asp-for="Answer.Description" class="form-control" autocomplete="off" />
                 <span asp-validation-for="Answer.Description" class="text-danger"></span>
+                @*@Html.LabelFor(m => m.Answer.Description, Model.Question.Description)
+                @Html.EditorFor(m => m.Answer.Description, new { autocomplete = "off" })*@
             </div>
             <div class="form-group">
                 <input type="submit" value="Save & Continue" class="btn btn-primary" />
@@ -40,3 +43,7 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
