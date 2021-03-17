@@ -40,7 +40,7 @@
                     <a asp-page="./Active" asp-route-QuestionnaireCode="@item.Code" asp-route-QuestionId="@item.ActiveQuestionId">Active</a> |
                     <a asp-page="./Delete" asp-route-id="@item.QuestionnaireId">Delete</a> |
                     <a asp-page="/Questions/Index" asp-route-QuestionnaireId="@item.QuestionnaireId">Questions</a> |
-                    <a href="@Model.QRURL@Common.Utilities.Base64Encode(Model.QURL + item.Code)/0">QR Code</a>
+                    <a href="@Model.QRURL@Common.Utilities.Base64Encode(Model.QURL + item.Code + "/0")">QR Code</a>
                 </td>
             </tr>
         }
