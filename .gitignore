@@ -1,7 +1,8 @@
 .vs
+.vscode
+.config
 bin
 obj
 wwwroot/AppData
-.config
 Properties/PublishProfiles
 Properties/ServiceDependencies
