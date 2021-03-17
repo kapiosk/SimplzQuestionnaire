@@ -41,6 +41,7 @@ namespace SimplzQuestionnaire.Model
     public class Question
     {
         public virtual int QuestionId { get; set; }
+        public virtual int Rank { get; set; }
         public virtual string Description { get; set; }
         public virtual int Timeout { get; set; }
         public virtual int MaxAnswers { get; set; }

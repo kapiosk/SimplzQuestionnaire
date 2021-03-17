@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Model;
 
@@ -37,11 +38,15 @@ namespace SimplzQuestionnaire.Pages.Questions
             {
                 return Page();
             }
+            Question.Rank = await _context.Questionnaires
+                                          .Include("Questions")
+                                          .Select(q => q.Questions.Count)
+                                          .FirstOrDefaultAsync(q => QuestionnaireId == QuestionnaireId) + 1;
             Question.QuestionnaireId = QuestionnaireId;
             _context.Questions.Add(Question);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index", new { QuestionnaireId = QuestionnaireId });
+            return RedirectToPage("./Index", new { QuestionnaireId });
         }
     }
 }

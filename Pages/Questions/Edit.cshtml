@@ -40,12 +40,17 @@
                     <input class="form-check-input" asp-for="Question.AcceptsCustomAnswer" /> @Html.DisplayNameFor(model => model.Question.AcceptsCustomAnswer)
                 </label>
             </div>
+            <div class="form-group">
+                <label asp-for="Question.Rank" class="control-label"></label>
+                <input asp-for="Question.Rank" class="form-control" />
+                <span asp-validation-for="Question.Rank" class="text-danger"></span>
+            </div>
             <input type="hidden" asp-for="Question.QuestionnaireId" />
             @*<div class="form-group">
-                    <label asp-for="Question.QuestionnaireId" class="control-label"></label>
-                    <select asp-for="Question.QuestionnaireId" class="form-control" asp-items="ViewBag.QuestionnaireId"></select>
-                    <span asp-validation-for="Question.QuestionnaireId" class="text-danger"></span>
-                </div>*@
+                <label asp-for="Question.QuestionnaireId" class="control-label"></label>
+                <select asp-for="Question.QuestionnaireId" class="form-control" asp-items="ViewBag.QuestionnaireId"></select>
+                <span asp-validation-for="Question.QuestionnaireId" class="text-danger"></span>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

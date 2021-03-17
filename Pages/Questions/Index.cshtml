@@ -28,6 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Question[0].AcceptsCustomAnswer)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question[0].Rank)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -49,6 +52,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AcceptsCustomAnswer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rank)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-QuestionId="@item.QuestionId" asp-route-QuestionnaireId="@Model.QuestionnaireId">Edit</a> |

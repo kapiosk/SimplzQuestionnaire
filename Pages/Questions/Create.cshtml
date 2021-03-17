@@ -39,6 +39,11 @@
                     <input class="form-check-input" asp-for="Question.AcceptsCustomAnswer" /> @Html.DisplayNameFor(model => model.Question.AcceptsCustomAnswer)
                 </label>
             </div>
+            @*<div class="form-group">
+                <label asp-for="Question.Rank" class="control-label"></label>
+                <input asp-for="Question.Rank" class="form-control" value="0" />
+                <span asp-validation-for="Question.Rank" class="text-danger"></span>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

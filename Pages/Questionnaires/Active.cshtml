@@ -7,7 +7,7 @@
 
 <h1>Active Question</h1>
 
-<h4>Question @Model.Question.QuestionId</h4>
+<h4>Question @Model.Question.Rank</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -22,7 +22,7 @@
                     <span asp-validation-for="QuestionId" class="text-danger"></span>
                 </div>
                 <div class="mt-2">
-                    <input type="submit" value="Change Active" class="btn btn-primary" asp-page-handler="ChangeActive"/>
+                    <input type="submit" value="Change Active" class="btn btn-primary" asp-page-handler="ChangeActive" />
                 </div>
                 <hr />
             }
@@ -31,6 +31,7 @@
             <input type="hidden" asp-for="Question.MaxAnswers" />
             <input type="hidden" asp-for="Question.QuestionnaireId" />
             <input type="hidden" asp-for="Question.Timeout" />
+            <input type="hidden" asp-for="Question.Rank" />
             <input type="hidden" asp-for="Answer.AnswerId" />
             <input type="hidden" asp-for="Answer.QuestionId" />
             <div class="form-group">
