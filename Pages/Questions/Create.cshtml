@@ -14,24 +14,25 @@
         @using (Html.BeginForm())
         {
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Question.QuestionnaireId" />
             <div class="form-group">
                 <label asp-for="Question.Description" class="control-label"></label>
-                <input asp-for="Question.Description" class="form-control" />
+                <input asp-for="Question.Description" class="form-control" autocomplete="off" />
                 <span asp-validation-for="Question.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Question.Timeout" class="control-label"></label>
-                <input asp-for="Question.Timeout" class="form-control" value="0" />
+                <input asp-for="Question.Timeout" class="form-control" />
                 <span asp-validation-for="Question.Timeout" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Question.MaxAnswers" class="control-label"></label>
-                <input asp-for="Question.MaxAnswers" asp-va class="form-control" value="0" />
+                <input asp-for="Question.MaxAnswers" asp-va class="form-control" />
                 <span asp-validation-for="Question.MaxAnswers" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Question.MaxPoints" class="control-label"></label>
-                <input asp-for="Question.MaxPoints" class="form-control" value="0" />
+                <input asp-for="Question.MaxPoints" class="form-control" />
                 <span asp-validation-for="Question.MaxPoints" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -39,11 +40,11 @@
                     <input class="form-check-input" asp-for="Question.AcceptsCustomAnswer" /> @Html.DisplayNameFor(model => model.Question.AcceptsCustomAnswer)
                 </label>
             </div>
-            @*<div class="form-group">
+            <div class="form-group">
                 <label asp-for="Question.Rank" class="control-label"></label>
-                <input asp-for="Question.Rank" class="form-control" value="0" />
+                <input asp-for="Question.Rank" class="form-control" />
                 <span asp-validation-for="Question.Rank" class="text-danger"></span>
-            </div>*@
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

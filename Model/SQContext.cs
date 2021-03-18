@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimplzQuestionnaire.Model
 {
-    // Add-Migration Init -v
+    // Add-Migration M3 -v
     //https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-5.0
 
     public class SQContext : DbContext
@@ -41,11 +41,11 @@ namespace SimplzQuestionnaire.Model
     public class Question
     {
         public virtual int QuestionId { get; set; }
-        public virtual int Rank { get; set; }
+        public virtual int Rank { get; set; } = 1;
         public virtual string Description { get; set; }
-        public virtual int Timeout { get; set; }
-        public virtual int MaxAnswers { get; set; }
-        public virtual int MaxPoints { get; set; }
+        public virtual int Timeout { get; set; } = 0;
+        public virtual int MaxAnswers { get; set; } = 0;
+        public virtual int MaxPoints { get; set; } = 0;
         public virtual bool AcceptsCustomAnswer { get; set; }
         public virtual int QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
