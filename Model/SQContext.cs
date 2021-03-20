@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimplzQuestionnaire.Model
 {
-    // Add-Migration M4 -v
+    //Add-Migration M2 -v
     //https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-5.0
 
     public class SQContext : DbContext
@@ -25,10 +25,9 @@ namespace SimplzQuestionnaire.Model
         public virtual DbSet<Questionnaire> Questionnaires { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Answer> Answers { get; set; }
-        public virtual DbSet<QuestionnaireUser> QuestionnaireUsers { get; set; }
         public virtual DbSet<UserAnswer> UserAnswers { get; set; }
+        public virtual DbSet<QuestionnaireUser> QuestionnaireUsers { get; set; }
         public virtual DbSet<QuestionnaireUserClaim> QuestionnaireUserClaims { get; set; }
-
     }
 
     public enum Progression
@@ -74,14 +73,20 @@ namespace SimplzQuestionnaire.Model
         public virtual Progression Progression { get; set; }
         public virtual int ActiveQuestionId { get; set; }
 
+        [Column(TypeName = "nvarchar")]
+        [System.ComponentModel.DataAnnotations.StringLength(36)]
         [ForeignKey("QuestionnaireUser")]
         public virtual string UserId { get; set; }
         public virtual QuestionnaireUser QuestionnaireUser { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
     }
 
-    public class QuestionnaireUser : IdentityUser
+    public class QuestionnaireUser : IdentityUser<string>
     {
+
+        [Column(TypeName = "nvarchar")]
+        [System.ComponentModel.DataAnnotations.StringLength(36)]
+        public override string Id { get; set; } = Guid.NewGuid().ToString();
         [ForeignKey("UserId")]
         public virtual ICollection<Questionnaire> Questionnaires { get; set; }
         public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
@@ -98,9 +103,10 @@ namespace SimplzQuestionnaire.Model
         public virtual Answer Answer { get; set; }
         public virtual string TextAnswer { get; set; }
 
+        [Column(TypeName = "nvarchar")]
+        [System.ComponentModel.DataAnnotations.StringLength(36)]
         [ForeignKey("QuestionnaireUser")]
         public virtual string UserId { get; set; }
-        public virtual QuestionnaireUser QuestionnaireUser { get; set; }
         public virtual DateTime StartTime { get; set; }
         public virtual DateTime EndTime { get; set; }
     }

@@ -16,7 +16,10 @@ namespace SimplzQuestionnaire
             {
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<Model.SQContext>();
-                context.Database.Migrate();
+                if (context.Database.IsSqlServer())
+                {
+                    context.Database.Migrate();
+                }
             }
 
             await host.RunAsync();

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -23,15 +22,26 @@ namespace SimplzQuestionnaire
         {
             services.AddApplication(Configuration);
 
-            services.AddDbContext<Model.SQContext>(opts => opts.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<Model.SQContext>(opts =>
+            {
+                var connString = Configuration.GetConnectionString("DefaultConnection");
+                if (string.IsNullOrEmpty(connString))
+                {
+                    opts.UseInMemoryDatabase("SimplzQuestionnaireDb");
+                }
+                else
+                {
+                    opts.UseSqlServer(connString);
+                }
+            });
 
             services.AddScoped<SignInManager<Model.QuestionnaireUser>>();
 
             services.AddIdentityCore<Model.QuestionnaireUser>(opts => Configuration.Bind("IdentityCoreSettings", opts))
                     .AddEntityFrameworkStores<Model.SQContext>();
-
+            //.AddDefaultTokenProviders()
+            //  .AddDefaultUI();
             services.AddAuthentication(IdentityConstants.ApplicationScheme)
-                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => Configuration.Bind("JwtSettings", opts))
                     .AddCookie(IdentityConstants.ApplicationScheme, opts => Configuration.Bind("CookieSettings", opts));
         }
 
