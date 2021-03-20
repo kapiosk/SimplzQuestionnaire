@@ -6,3 +6,4 @@ obj
 wwwroot/AppData
 Properties/PublishProfiles
 Properties/ServiceDependencies
+appsettings.Development.json
