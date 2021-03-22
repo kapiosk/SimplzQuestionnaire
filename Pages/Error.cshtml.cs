@@ -39,8 +39,11 @@ namespace SimplzQuestionnaire.Pages
                 try
                 {
                     var user = _context.QuestionnaireUsers.FirstOrDefault(u => u.Id == _currentUser.UserId);
-                    await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-                    return LocalRedirect("/");
+                    if (user is null)
+                    {
+                        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+                        return LocalRedirect("/");
+                    }
                 }
                 catch { }
             }
