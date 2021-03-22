@@ -15,9 +15,9 @@ namespace SimplzQuestionnaire.Controllers
         {
             using QRCodeGenerator qrGenerator = new();
             using QRCodeData qrCodeData = qrGenerator.CreateQrCode(Common.Utilities.Base64Decode(data), QRCodeGenerator.ECCLevel.Q);
-            using SvgQRCode qrCode = new(qrCodeData);
-            string qrCodeAsSvg = await Task.FromResult(qrCode.GetGraphic(20));
-            return Content(qrCodeAsSvg, "image/svg+xml; charset=utf-8");
+            using PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+            byte[] qr = await Task.FromResult(qrCode.GetGraphic(20));
+            return new FileContentResult(qr, "image/png");
         }
     }
 }
