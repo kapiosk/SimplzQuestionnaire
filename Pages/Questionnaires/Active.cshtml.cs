@@ -84,31 +84,32 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
             if (Question is null)
                 Question = _context.Questions.FirstOrDefault(q => q.QuestionnaireId == questionnaire.QuestionnaireId);
 
-            if (IsAdmin)
+            if (Question is not null)
             {
-                Questions = _context.Questionnaires
-                                    .Include(q => q.Questions)
-                                    .FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId)
-                                    .Questions.Select(q => new SelectListItem { Text = q.Description, Value = q.QuestionId.ToString() });
+                if (IsAdmin)
+                {
+                    Questions = _context.Questionnaires
+                                        .Include(q => q.Questions)
+                                        .FirstOrDefault(q => q.QuestionnaireId == Question.QuestionnaireId)
+                                        .Questions.Select(q => new SelectListItem { Text = q.Description, Value = q.QuestionId.ToString() });
+                }
+
+                Answer = (from ua in _context.UserAnswers
+                          where ua.UserId == _currentUser.UserId
+                          join a in _context.Answers on ua.AnswerId equals a.AnswerId
+                          where a.QuestionId == Question.QuestionId
+                          select a).FirstOrDefault();
+
+                if (Answer is null)
+                {
+                    Answer = new() { QuestionId = Question.QuestionId };
+                    _context.Answers.Add(Answer);
+                    _context.SaveChanges();
+                    UserAnswer userAnswer = new() { AnswerId = Answer.AnswerId, UserId = _currentUser.UserId };
+                    _context.UserAnswers.Add(userAnswer);
+                    _context.SaveChanges();
+                }
             }
-
-            Answer = (from ua in _context.UserAnswers
-                      where ua.UserId == _currentUser.UserId
-                      join a in _context.Answers on ua.AnswerId equals a.AnswerId
-                      where a.QuestionId == Question.QuestionId
-                      select a).FirstOrDefault();
-
-            if (Answer is null)
-            {
-                Answer = new() { QuestionId = Question.QuestionId };
-                _context.Answers.Add(Answer);
-                _context.SaveChanges();
-                UserAnswer userAnswer = new() { AnswerId = Answer.AnswerId, UserId = _currentUser.UserId };
-                _context.UserAnswers.Add(userAnswer);
-                _context.SaveChanges();
-            }
-
-
         }
     }
 }
