@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -18,15 +20,32 @@ namespace SimplzQuestionnaire.Pages
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
         private readonly ILogger<ErrorModel> _logger;
+        private readonly Interfaces.ICurrentUserService _currentUser;
+        private readonly Model.SQContext _context;
 
-        public ErrorModel(ILogger<ErrorModel> logger)
+        public ErrorModel(ILogger<ErrorModel> logger, Interfaces.ICurrentUserService currentUser, Model.SQContext context)
         {
             _logger = logger;
+            _currentUser = currentUser;
+            _context = context;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+
+            if (!string.IsNullOrEmpty(_currentUser.UserId))
+            {
+                try
+                {
+                    var user = _context.QuestionnaireUsers.FirstOrDefault(u => u.Id == _currentUser.UserId);
+                    await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+                    return LocalRedirect("/");
+                }
+                catch { }
+            }
+
+            return Page();
         }
     }
 }
