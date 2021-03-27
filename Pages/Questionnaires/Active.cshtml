@@ -14,22 +14,6 @@
         @using (Html.BeginForm())
         {
             @Html.ValidationSummary()
-            @if (Model.IsAdmin)
-            {
-                <div class="form-group">
-                    <label asp-for="QuestionId" class="control-label">Active Question</label>
-                    <select asp-for="QuestionId" class="form-control" asp-items="Model.Questions"></select>
-                    <span asp-validation-for="QuestionId" class="text-danger"></span>
-                </div>
-                <div class="mt-2">
-                    <input type="submit" value="Change Active" class="btn btn-primary" asp-page-handler="ChangeActive" />
-                </div>
-                <hr />
-                <table id="answersTable" class="table table-striped">
-                    <tr><th>User</th><th>Answer</th></tr>
-                </table>
-                <hr />
-            }
             <input type="hidden" asp-for="Question.QuestionId" />
             <input type="hidden" asp-for="Question.CustomAnswer" />
             <input type="hidden" asp-for="Question.MaxAnswers" />
@@ -38,16 +22,30 @@
             <input type="hidden" asp-for="Question.Rank" />
             <input type="hidden" asp-for="Answer.AnswerId" />
             <input type="hidden" asp-for="Answer.QuestionId" />
+            @if (Model.IsAdmin)
+            {
             <div class="form-group">
+                <label asp-for="QuestionId" class="control-label">Active Question</label>
+                <select asp-for="QuestionId" class="form-control" asp-items="Model.Questions"></select>
+                <span asp-validation-for="QuestionId" class="text-danger"></span>
+                </div>
+                <div class="mt-2">
+                <input type="submit" value="Change Active" class="btn btn-primary" asp-page-handler="ChangeActive" />
+                </div>
+                <hr />
+                <table id="answersTable" class="table table-striped"><tr><th>User</th><th>Answer</th></tr></table>
+            }
+            else
+            {
+                <div class="form-group">
                 <label asp-for="Answer.Description" class="control-label">@Model.Question.Description</label>
                 <input asp-for="Answer.Description" class="form-control" autocomplete="off" type="@Model.AnswerType" />
                 <span asp-validation-for="Answer.Description" class="text-danger"></span>
-                @*@Html.LabelFor(m => m.Answer.Description, Model.Question.Description)
-                @Html.EditorFor(m => m.Answer.Description, new { autocomplete = "off" })*@
-            </div>
-            <div class="mt-2">
+                </div>
+                <div class="mt-2">
                 <input id="btnSave" type="submit" value="Save & Continue" class="btn btn-primary" />
-            </div>
+                </div>
+            }
         }
     </div>
 </div>
@@ -84,7 +82,7 @@
 }
 @if (Model.IsAdmin)
 {
-    <script>
+<script>
         var tableAnswers = [];
         var table = document.getElementById("answersTable")
         function RefreshAnswers() {
@@ -115,5 +113,5 @@
             setTimeout(RefreshAnswers, 1000)
         }
         RefreshAnswers();
-    </script>
+</script>
 }
