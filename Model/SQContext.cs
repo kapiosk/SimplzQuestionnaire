@@ -41,7 +41,7 @@ namespace SimplzQuestionnaire.Model
     {
         NO = 0,
         TEXT = 1,
-        INTEGER = 2
+        NUMBER = 2
     }
 
     public class Question

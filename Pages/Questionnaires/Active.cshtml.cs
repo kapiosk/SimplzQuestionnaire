@@ -90,7 +90,7 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
             {
                 switch (Question.CustomAnswer)
                 {
-                    case CustomAnswer.INTEGER:
+                    case CustomAnswer.NUMBER:
                         AnswerType = "number";
                         break;
                     case CustomAnswer.TEXT:
