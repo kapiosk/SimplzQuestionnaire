@@ -35,7 +35,7 @@ namespace SimplzQuestionnaire.Pages.Questions
             Question = new();
             if (prevQuestion is not null)
             {
-                Question.AcceptsCustomAnswer = prevQuestion.AcceptsCustomAnswer;
+                Question.CustomAnswer = prevQuestion.CustomAnswer;
                 Question.MaxAnswers = prevQuestion.MaxAnswers;
                 Question.MaxPoints = prevQuestion.MaxPoints;
                 Question.Timeout = prevQuestion.Timeout;

@@ -35,10 +35,10 @@
                 <input asp-for="Question.MaxPoints" class="form-control" />
                 <span asp-validation-for="Question.MaxPoints" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Question.AcceptsCustomAnswer" /> @Html.DisplayNameFor(model => model.Question.AcceptsCustomAnswer)
-                </label>
+            <div class="form-group">
+                <label asp-for="Question.CustomAnswer" class="control-label"></label>
+                <select asp-for="Question.CustomAnswer" class="form-control" asp-items="Html.GetEnumSelectList<Model.CustomAnswer>()"></select>
+                <span asp-validation-for="Question.CustomAnswer" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Question.Rank" class="control-label"></label>

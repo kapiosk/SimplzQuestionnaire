@@ -31,7 +31,7 @@
                 <hr />
             }
             <input type="hidden" asp-for="Question.QuestionId" />
-            <input type="hidden" asp-for="Question.AcceptsCustomAnswer" />
+            <input type="hidden" asp-for="Question.CustomAnswer" />
             <input type="hidden" asp-for="Question.MaxAnswers" />
             <input type="hidden" asp-for="Question.QuestionnaireId" />
             <input type="hidden" asp-for="Question.Timeout" />
@@ -40,7 +40,7 @@
             <input type="hidden" asp-for="Answer.QuestionId" />
             <div class="form-group">
                 <label asp-for="Answer.Description" class="control-label">@Model.Question.Description</label>
-                <input asp-for="Answer.Description" class="form-control" autocomplete="off" />
+                <input asp-for="Answer.Description" class="form-control" autocomplete="off" type="@Model.AnswerType" />
                 <span asp-validation-for="Answer.Description" class="text-danger"></span>
                 @*@Html.LabelFor(m => m.Answer.Description, Model.Question.Description)
                 @Html.EditorFor(m => m.Answer.Description, new { autocomplete = "off" })*@

@@ -26,6 +26,8 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
 
         [BindProperty]
         public IEnumerable<SelectListItem> Questions { get; set; }
+        [BindProperty]
+        public string AnswerType { get; set; }
 
         private readonly ICurrentUserService _currentUser;
         private readonly SQContext _context;
@@ -86,6 +88,16 @@ namespace SimplzQuestionnaire.Pages.Questionnaires
 
             if (Question is not null)
             {
+                switch (Question.CustomAnswer)
+                {
+                    case CustomAnswer.INTEGER:
+                        AnswerType = "number";
+                        break;
+                    case CustomAnswer.TEXT:
+                        AnswerType = "text";
+                        break;
+                }
+
                 if (IsAdmin)
                 {
                     Questions = _context.Questionnaires

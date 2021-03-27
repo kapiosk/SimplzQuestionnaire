@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimplzQuestionnaire.Model;
 
 namespace SimplzQuestionnaire.Migrations
 {
     [DbContext(typeof(SQContext))]
-    partial class SQContextModelSnapshot : ModelSnapshot
+    [Migration("20210327212130_M2")]
+    partial class M2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,11 +86,14 @@ namespace SimplzQuestionnaire.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CustomAnswer")
-                        .HasColumnType("int");
+                    b.Property<bool>("AcceptsCustomAnswer")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IntegerCustomAnswer")
+                        .HasColumnType("bit");
 
                     b.Property<int>("MaxAnswers")
                         .HasColumnType("int");

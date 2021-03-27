@@ -37,6 +37,13 @@ namespace SimplzQuestionnaire.Model
         OnSubmit = 2
     }
 
+    public enum CustomAnswer
+    {
+        NO = 0,
+        TEXT = 1,
+        INTEGER = 2
+    }
+
     public class Question
     {
         public virtual int QuestionId { get; set; }
@@ -45,7 +52,8 @@ namespace SimplzQuestionnaire.Model
         public virtual int Timeout { get; set; } = 0;
         public virtual int MaxAnswers { get; set; } = 0;
         public virtual int MaxPoints { get; set; } = 0;
-        public virtual bool AcceptsCustomAnswer { get; set; }
+        public virtual CustomAnswer CustomAnswer { get; set; }
+        //public virtual bool IntegerCustomAnswer { get; set; }
         public virtual int QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
