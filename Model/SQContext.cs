@@ -44,6 +44,25 @@ namespace SimplzQuestionnaire.Model
         NUMBER = 2
     }
 
+    public class SessionGroup
+    {
+        public virtual int SessionGroupId { get; set; }
+        public virtual string Name { get; set; } = "";
+        public virtual DateTime Date { get; set; } = DateTime.UtcNow.Date;
+        [ForeignKey("Questionnaire")]
+        public virtual int QuestionnaireId { get; set; }
+    }
+
+    public class SessionGroupUser
+    {
+        [ForeignKey("SessionGroup")]
+        public virtual int SessionGroupId { get; set; }
+        [Column(TypeName = "nvarchar")]
+        [System.ComponentModel.DataAnnotations.StringLength(36)]
+        [ForeignKey("QuestionnaireUser")]
+        public virtual string UserId { get; set; }
+    }
+
     public class Question
     {
         public virtual int QuestionId { get; set; }
@@ -53,7 +72,6 @@ namespace SimplzQuestionnaire.Model
         public virtual int MaxAnswers { get; set; } = 0;
         public virtual int MaxPoints { get; set; } = 0;
         public virtual CustomAnswer CustomAnswer { get; set; }
-        //public virtual bool IntegerCustomAnswer { get; set; }
         public virtual int QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
@@ -102,7 +120,7 @@ namespace SimplzQuestionnaire.Model
 
     public class QuestionnaireUserClaim : IdentityUserClaim<string>
     {
-        public virtual QuestionnaireUser User { get; set; }
+        //public virtual QuestionnaireUser User { get; set; }
     }
 
     public class UserAnswer
