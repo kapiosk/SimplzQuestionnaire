@@ -20,6 +20,11 @@ namespace SimplzQuestionnaire.Model
                 .HasKey(c => new { c.UserId, c.AnswerId });
             modelBuilder.Entity<UserAnswer>()
                 .HasIndex(c => new { c.UserId, c.AnswerId });
+
+            modelBuilder.Entity<SessionGroupUser>()
+                .HasKey(c => new { c.UserId, c.SessionGroupId });
+            modelBuilder.Entity<SessionGroupUser>()
+                .HasIndex(c => new { c.UserId, c.SessionGroupId });
         }
 
         public virtual DbSet<Questionnaire> Questionnaires { get; set; }
@@ -28,6 +33,8 @@ namespace SimplzQuestionnaire.Model
         public virtual DbSet<UserAnswer> UserAnswers { get; set; }
         public virtual DbSet<QuestionnaireUser> QuestionnaireUsers { get; set; }
         public virtual DbSet<QuestionnaireUserClaim> QuestionnaireUserClaims { get; set; }
+        public virtual DbSet<SessionGroup> SessionGroups { get; set; }
+        public virtual DbSet<SessionGroupUser> SessionGroupUsers { get; set; }
     }
 
     public enum Progression
@@ -51,6 +58,8 @@ namespace SimplzQuestionnaire.Model
         public virtual DateTime Date { get; set; } = DateTime.UtcNow.Date;
         [ForeignKey("Questionnaire")]
         public virtual int QuestionnaireId { get; set; }
+        public virtual Questionnaire Questionnaire { get; set; }
+        public virtual ICollection<SessionGroupUser> SessionGroupUsers { get; set; }
     }
 
     public class SessionGroupUser
@@ -105,6 +114,7 @@ namespace SimplzQuestionnaire.Model
         public virtual string UserId { get; set; }
         public virtual QuestionnaireUser QuestionnaireUser { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
+        public virtual ICollection<SessionGroup> SessionGroups { get; set; }
     }
 
     public class QuestionnaireUser : IdentityUser<string>
