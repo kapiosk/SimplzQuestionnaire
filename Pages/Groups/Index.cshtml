@@ -3,38 +3,86 @@
 @{
     ViewData["Title"] = "Groups";
 }
-<h1>Groups</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Questionnaire</th>
-            <th>Group</th>
-            <th>User</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @*@foreach (var item in Model.Items)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.QuestionnaireName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GroupName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.QuestionnaireId">Edit</a> |
-                    <a asp-page="./Active" asp-route-QuestionnaireCode="@item.Code" asp-route-QuestionId="@item.ActiveQuestionId">Active</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.QuestionnaireId">Delete</a> |
-                    <a asp-page="/Questions/Index" asp-route-QuestionnaireId="@item.QuestionnaireId">Questions</a> |
-                    <a href="@Model.QRURL@Common.Utilities.Base64Encode(Model.QURL + item.Code + "/0")">QR Code</a> |
-                    <a href="@(Model.QURL + item.Code + "/0")">Link</a>
-                </td>
-            </tr>
-        }*@
-    </tbody>
-</table>
+<div class="row">
+    <h1>Groups</h1>
+</div>
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+    <div class="row">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Questionnaire</th>
+                        <th scope="col">Group</th>
+                        <th scope="col">User</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Items.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <label asp-for="Items[i].QuestionnaireName" class="control-label">@Model.Items[i].QuestionnaireName</label>
+                                <input type="hidden" asp-for="Items[i].QuestionnaireId" />
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                <label asp-for="Items[i].NewGroup" class="control-label">Add group</label>
+                                <input type="text" asp-for="Items[i].NewGroup" />
+                            </td>
+                        </tr>
+                        @for (var ii = 0; ii < Model.Items[i].Groups.Count; ii++)
+                        {
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    <label asp-for="Items[i].Groups[ii].GroupName" class="control-label">@Model.Items[i].Groups[ii].GroupName</label>
+                                    <input type="hidden" asp-for="Items[i].Groups[ii].SessionGroupId" />
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <label asp-for="Items[i].Groups[ii].QuestionnaireId" class="control-label">Copy to</label>
+                                    <select asp-for="Items[i].Groups[ii].QuestionnaireId" class="form-control"
+                                            asp-items="Model.GetQuestionnaires()">
+                                    </select>
+                                </td>
+                            </tr>
+                            @for (var iii = 0; iii < Model.Items[i].Groups[ii].Users.Count; iii++)
+                            {
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <label asp-for="Items[i].Groups[ii].Users[iii].UserName" class="control-label">@Model.Items[i].Groups[ii].Users[iii].UserName</label>
+                                        <input type="hidden" asp-for="Items[i].Groups[ii].Users[iii].UserId" />
+                                        <input type="hidden" asp-for="Items[i].Groups[ii].Users[iii].PreviousSessionGroupId" />
+                                    </td>
+                                    <td>
+                                        <select asp-for="Items[i].Groups[ii].Users[iii].SessionGroupId" class="form-control"
+                                                asp-items="Model.Groups[Model.Items[i].QuestionnaireId]">
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -129,9 +129,7 @@ namespace SimplzQuestionnaire.Model
     }
 
     public class QuestionnaireUserClaim : IdentityUserClaim<string>
-    {
-        //public virtual QuestionnaireUser User { get; set; }
-    }
+    {    }
 
     public class UserAnswer
     {

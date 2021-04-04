@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SimplzQuestionnaire.Interfaces;
 using SimplzQuestionnaire.Model;
@@ -11,8 +12,9 @@ namespace SimplzQuestionnaire.Pages.Groups
 {
     public class IndexModel : PageModel
     {
-        [BindProperty()]
-        public IEnumerable<BindableQuestionnaire> Items { get; set; }
+        [BindProperty]
+        public List<BindableQuestionnaire> Items { get; set; }
+        public Dictionary<int, List<SelectListItem>> Groups { get; set; }
 
         private readonly ICurrentUserService _currentUser;
         private readonly SQContext _context;
@@ -20,6 +22,46 @@ namespace SimplzQuestionnaire.Pages.Groups
         {
             _currentUser = currentUser;
             _context = context;
+        }
+
+        public void OnPost()
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var questionnaire in Items)
+                    {
+                        if (!string.IsNullOrEmpty(questionnaire.NewGroup))
+                        {
+                            var sg = new SessionGroup { QuestionnaireId = questionnaire.QuestionnaireId, Name = questionnaire.NewGroup };
+                            _context.SessionGroups.Add(sg);
+                            _context.SaveChanges();
+                        }
+                        foreach (var group in questionnaire.Groups)
+                        {
+                            foreach (var user in group.Users)
+                            {
+                                if (user.SessionGroupId != user.PreviousSessionGroupId)
+                                {
+                                    var uOld = new SessionGroupUser { UserId = user.UserId, SessionGroupId = user.PreviousSessionGroupId };
+                                    var nOld = new SessionGroupUser { UserId = user.UserId, SessionGroupId = user.SessionGroupId };
+                                    if (user.PreviousSessionGroupId > 0) _context.SessionGroupUsers.Remove(uOld);
+                                    if (user.SessionGroupId > 0) _context.SessionGroupUsers.Add(nOld);
+                                    _context.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                    transaction.Commit();
+                }
+                catch(Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    transaction.Rollback();
+                }
+            }
+            OnGet();
         }
 
         public void OnGet()
@@ -60,7 +102,7 @@ namespace SimplzQuestionnaire.Pages.Groups
                                  Key
                              };
 
-            Items = assigned.Concat(unassigned)
+            Items = assigned.Union(unassigned)
                             .ToList()
                             .GroupBy(x => new
                             {
@@ -76,7 +118,9 @@ namespace SimplzQuestionnaire.Pages.Groups
                                 {
                                     UserId = y.UserId,
                                     UserName = y.UserName,
-                                    Key = y.Key
+                                    Key = y.Key,
+                                    SessionGroupId = y.SessionGroupId,
+                                    PreviousSessionGroupId = y.SessionGroupId
                                 })
                             })
                             .GroupBy(x => new
@@ -92,23 +136,38 @@ namespace SimplzQuestionnaire.Pages.Groups
                                 {
                                     SessionGroupId = y.Key.SessionGroupId,
                                     GroupName = y.Key.GroupName,
-                                    Users = y.Users
-                                })
-                            });
+                                    Users = y.Users.ToList()
+                                }).ToList()
+                            })
+                            .ToList();
+
+            Groups = (from questionnaire in _context.Questionnaires
+                      join sessionGroup in _context.SessionGroups on questionnaire.QuestionnaireId equals sessionGroup.QuestionnaireId
+                      select new { questionnaire.QuestionnaireId, sg = new SelectListItem { Value = sessionGroup.SessionGroupId.ToString(), Text = sessionGroup.Name } })
+                      .ToList()
+                      .GroupBy(x => x.QuestionnaireId)
+                      .ToDictionary(x => x.Key, x => x.Select(x => x.sg).Concat(new[] { new SelectListItem { Value = "0", Text = "Unassigned" } }).ToList());
         }
 
         public class BindableQuestionnaire
         {
             public int QuestionnaireId { get; set; }
             public string QuestionnaireName { get; set; }
-            public IEnumerable<BindableGroup> Groups { get; set; }
+            public List<BindableGroup> Groups { get; set; }
+            public string NewGroup { get; set; }
+        }
+
+        public List<SelectListItem> GetQuestionnaires()
+        {
+            return Items.Select(x => new SelectListItem { Text = x.QuestionnaireName, Value = x.QuestionnaireId.ToString() }).ToList();
         }
 
         public class BindableGroup
         {
             public int SessionGroupId { get; set; }
             public string GroupName { get; set; }
-            public IEnumerable<BindableUser> Users { get; set; }
+            public List<BindableUser> Users { get; set; }
+            public int QuestionnaireId { get; set; }
         }
 
         public class BindableUser
@@ -116,6 +175,8 @@ namespace SimplzQuestionnaire.Pages.Groups
             public string UserId { get; set; }
             public string UserName { get; set; }
             public string Key { get; set; }
+            public int SessionGroupId { get; set; }
+            public int PreviousSessionGroupId { get; set; }
         }
     }
 }
