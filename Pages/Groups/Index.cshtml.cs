@@ -45,9 +45,9 @@ namespace SimplzQuestionnaire.Pages.Groups
                                 if (user.SessionGroupId != user.PreviousSessionGroupId)
                                 {
                                     var uOld = new SessionGroupUser { UserId = user.UserId, SessionGroupId = user.PreviousSessionGroupId };
-                                    var nOld = new SessionGroupUser { UserId = user.UserId, SessionGroupId = user.SessionGroupId };
+                                    var uNew = new SessionGroupUser { UserId = user.UserId, SessionGroupId = user.SessionGroupId };
                                     if (user.PreviousSessionGroupId > 0) _context.SessionGroupUsers.Remove(uOld);
-                                    if (user.SessionGroupId > 0) _context.SessionGroupUsers.Add(nOld);
+                                    if (user.SessionGroupId > 0) _context.SessionGroupUsers.Add(uNew);
                                     _context.SaveChanges();
                                 }
                             }
@@ -55,7 +55,7 @@ namespace SimplzQuestionnaire.Pages.Groups
                     }
                     transaction.Commit();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
                     transaction.Rollback();
@@ -66,11 +66,11 @@ namespace SimplzQuestionnaire.Pages.Groups
 
         public void OnGet()
         {
-            var assigned = from sessionGroup in _context.SessionGroups
-                           join questionnaire in _context.Questionnaires on sessionGroup.QuestionnaireId equals questionnaire.QuestionnaireId
+            var assigned = from sessionGroup in _context.SessionGroups.AsNoTracking()
+                           join questionnaire in _context.Questionnaires.AsNoTracking() on sessionGroup.QuestionnaireId equals questionnaire.QuestionnaireId
                            where questionnaire.UserId == _currentUser.UserId
-                           join sessionGroupUser in _context.SessionGroupUsers on sessionGroup.SessionGroupId equals sessionGroupUser.SessionGroupId
-                           join user in _context.QuestionnaireUsers on sessionGroupUser.UserId equals user.Id
+                           join sessionGroupUser in _context.SessionGroupUsers.AsNoTracking() on sessionGroup.SessionGroupId equals sessionGroupUser.SessionGroupId
+                           join user in _context.QuestionnaireUsers.AsNoTracking() on sessionGroupUser.UserId equals user.Id
                            let Key = questionnaire.QuestionnaireId + "_" + user.Id
                            select new
                            {
@@ -83,12 +83,12 @@ namespace SimplzQuestionnaire.Pages.Groups
                                Key
                            };
 
-            var unassigned = from questionnaire in _context.Questionnaires
+            var unassigned = from questionnaire in _context.Questionnaires.AsNoTracking()
                              where questionnaire.UserId == _currentUser.UserId
-                             join question in _context.Questions on questionnaire.QuestionnaireId equals question.QuestionnaireId
-                             join A in _context.Answers on question.QuestionId equals A.QuestionId
-                             join UA in _context.UserAnswers on A.AnswerId equals UA.AnswerId
-                             join user in _context.QuestionnaireUsers on UA.UserId equals user.Id
+                             join question in _context.Questions.AsNoTracking() on questionnaire.QuestionnaireId equals question.QuestionnaireId
+                             join A in _context.Answers.AsNoTracking() on question.QuestionId equals A.QuestionId
+                             join UA in _context.UserAnswers.AsNoTracking() on A.AnswerId equals UA.AnswerId
+                             join user in _context.QuestionnaireUsers.AsNoTracking() on UA.UserId equals user.Id
                              let Key = questionnaire.QuestionnaireId + "_" + user.Id
                              where !assigned.Select(x => x.Key).Contains(Key)
                              select new
@@ -141,8 +141,8 @@ namespace SimplzQuestionnaire.Pages.Groups
                             })
                             .ToList();
 
-            Groups = (from questionnaire in _context.Questionnaires
-                      join sessionGroup in _context.SessionGroups on questionnaire.QuestionnaireId equals sessionGroup.QuestionnaireId
+            Groups = (from questionnaire in _context.Questionnaires.AsNoTracking()
+                      join sessionGroup in _context.SessionGroups.AsNoTracking() on questionnaire.QuestionnaireId equals sessionGroup.QuestionnaireId
                       select new { questionnaire.QuestionnaireId, sg = new SelectListItem { Value = sessionGroup.SessionGroupId.ToString(), Text = sessionGroup.Name } })
                       .ToList()
                       .GroupBy(x => x.QuestionnaireId)
