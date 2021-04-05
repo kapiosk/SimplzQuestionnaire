@@ -24,7 +24,7 @@ namespace SimplzQuestionnaire.Pages.Groups
             _context = context;
         }
 
-        public void OnPost()
+        public ActionResult OnPost()
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -61,10 +61,10 @@ namespace SimplzQuestionnaire.Pages.Groups
                     transaction.Rollback();
                 }
             }
-            OnGet();
+            return OnGet();
         }
 
-        public void OnGet()
+        public ActionResult OnGet()
         {
             var assigned = from sessionGroup in _context.SessionGroups.AsNoTracking()
                            join questionnaire in _context.Questionnaires.AsNoTracking() on sessionGroup.QuestionnaireId equals questionnaire.QuestionnaireId
@@ -118,7 +118,6 @@ namespace SimplzQuestionnaire.Pages.Groups
                                 {
                                     UserId = y.UserId,
                                     UserName = y.UserName,
-                                    Key = y.Key,
                                     SessionGroupId = y.SessionGroupId,
                                     PreviousSessionGroupId = y.SessionGroupId
                                 })
@@ -147,6 +146,8 @@ namespace SimplzQuestionnaire.Pages.Groups
                       .ToList()
                       .GroupBy(x => x.QuestionnaireId)
                       .ToDictionary(x => x.Key, x => x.Select(x => x.sg).Concat(new[] { new SelectListItem { Value = "0", Text = "Unassigned" } }).ToList());
+
+            return Page();
         }
 
         public class BindableQuestionnaire
@@ -174,7 +175,6 @@ namespace SimplzQuestionnaire.Pages.Groups
         {
             public string UserId { get; set; }
             public string UserName { get; set; }
-            public string Key { get; set; }
             public int SessionGroupId { get; set; }
             public int PreviousSessionGroupId { get; set; }
         }
